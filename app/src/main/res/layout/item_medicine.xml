@@ -3,9 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/Widget.MediBuddy.Card"
-    app:cardBackgroundColor="@color/white"
-    app:strokeWidth="0dp">
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginVertical="10dp"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,85 +16,154 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:id="@+id/ivMedIcon"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@android:drawable/ic_menu_today"
-                app:tint="@color/primaryColor"
-                android:background="@drawable/bg_gradient_soft"
-                android:padding="10dp"
-                android:layout_marginEnd="16dp"/>
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_alignParentStart="true">
 
                 <TextView
                     android:id="@+id/tvMedName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Medicine Name"
+                    android:text="Amlodipine"
+                    android:textColor="#121212"
                     android:textSize="20sp"
-                    android:textColor="@color/textColorPrimary"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvMedDetails"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Dosage: 500mg"
-                    android:textColor="@color/textColorSecondary"
-                    android:textSize="14sp"/>
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_dosage_capsule"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="4dp"
+                    android:text="10mg"
+                    android:textColor="#757575"
+                    android:textSize="14sp" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivMedTypeIcon"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/bg_circle_light_blue"
+                android:padding="16dp"
+                android:src="@android:drawable/ic_menu_today"
+                app:tint="@color/primaryColor" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_next_intake"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_recent_history"
+                app:tint="@color/primaryColor" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NEXT INTAKE"
+                    android:textColor="#9E9E9E"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvNextIntakeTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tomorrow, 8:00 AM"
+                    android:textColor="#424242"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llStockContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivStockIcon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@android:drawable/ic_menu_delete"
+                app:tint="#2E7D32" />
 
             <TextView
                 android:id="@+id/tvStock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="12 left"
-                android:textColor="@color/primaryColor"
-                android:background="#1A0D47A1"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp"
-                android:textSize="12sp"
-                android:textStyle="bold"/>
+                android:layout_marginStart="8dp"
+                android:text="15 pills left"
+                android:textColor="#616161"
+                android:textSize="14sp" />
         </LinearLayout>
 
+        <!-- Warning Alert View (Hidden by default) -->
         <LinearLayout
+            android:id="@+id/llRefillAlert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_refill_alert"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:layout_marginTop="20dp">
+            android:padding="12dp"
+            android:visibility="gone">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnTaken"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:text="Mark Taken"
-                style="@style/Widget.Material3.Button.TonalButton"
-                app:cornerRadius="16dp"
-                android:layout_marginEnd="8dp"/>
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@android:drawable/stat_sys_warning"
+                app:tint="#D32F2F" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnReorder"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:text="Reorder"
-                android:visibility="gone"
-                style="@style/Widget.Material3.Button"
-                app:cornerRadius="16dp"
-                app:backgroundTint="@color/accent_red"/>
+            <TextView
+                android:id="@+id/tvRefillMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="3 pills left — Time to refill"
+                android:textColor="#D32F2F"
+                android:textSize="13sp"
+                android:textStyle="bold" />
         </LinearLayout>
+
+        <!-- Hidden button for logic -->
+        <Button
+            android:id="@+id/btnTaken"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+        <Button
+            android:id="@+id/btnReorder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

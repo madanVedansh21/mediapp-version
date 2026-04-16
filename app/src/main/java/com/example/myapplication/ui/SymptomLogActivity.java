@@ -3,6 +3,7 @@ package com.example.myapplication.ui;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.myapplication.R;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.myapplication.databinding.ActivitySymptomLogBinding;
 import com.example.myapplication.model.SymptomLog;

@@ -39,17 +39,27 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
     public void onBindViewHolder(@NonNull MedicineViewHolder holder, int position) {
         Medicine medicine = medicines.get(position);
         holder.binding.tvMedName.setText(medicine.getName());
-        holder.binding.tvMedDetails.setText("Dosage: " + medicine.getDosage() + " | Type: " + medicine.getType());
-        holder.binding.tvStock.setText("Stock: " + medicine.getStock());
+        holder.binding.tvMedDetails.setText(medicine.getDosage());
+        holder.binding.tvStock.setText(medicine.getStock() + " pills left");
 
-        holder.binding.btnTaken.setOnClickListener(v -> listener.onTakenClick(medicine));
-
+        // Logic to show/hide refill alert based on stock
         if (medicine.getStock() <= medicine.getThreshold()) {
-            holder.binding.btnReorder.setVisibility(View.VISIBLE);
-            holder.binding.btnReorder.setOnClickListener(v -> listener.onReorderClick(medicine));
+            holder.binding.llRefillAlert.setVisibility(View.VISIBLE);
+            holder.binding.llStockContainer.setVisibility(View.GONE);
+            holder.binding.tvRefillMessage.setText(medicine.getStock() + " pills left — Time to refill");
         } else {
-            holder.binding.btnReorder.setVisibility(View.GONE);
+            holder.binding.llRefillAlert.setVisibility(View.GONE);
+            holder.binding.llStockContainer.setVisibility(View.VISIBLE);
         }
+
+        // Set Icon based on type
+        if ("capsule".equalsIgnoreCase(medicine.getType())) {
+            holder.binding.ivMedTypeIcon.setImageResource(android.R.drawable.ic_menu_today); // Replace with capsule icon if available
+        } else {
+            holder.binding.ivMedTypeIcon.setImageResource(android.R.drawable.ic_menu_today);
+        }
+
+        holder.itemView.setOnClickListener(v -> listener.onTakenClick(medicine));
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityEmergencyBinding;
 import com.example.myapplication.service.MockApiService;
 
