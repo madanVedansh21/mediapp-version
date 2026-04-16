@@ -44,5 +44,9 @@ public class DashboardActivity extends AppCompatActivity {
         binding.btnEmergency.setOnClickListener(v -> {
             startActivity(new Intent(this, EmergencyActivity.class));
         });
+
+        binding.btnHistory.setOnClickListener(v -> {
+            startActivity(new Intent(this, LogHistoryActivity.class));
+        });
     }
 }

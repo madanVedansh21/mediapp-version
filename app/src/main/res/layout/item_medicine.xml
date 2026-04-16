@@ -153,6 +153,37 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <!-- Action Section (Conditional) -->
+        <LinearLayout
+            android:id="@+id/llActionArea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMarkTaken"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:text="MARK AS TAKEN"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                app:cornerRadius="14dp"
+                android:backgroundTint="@color/primaryColor"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvNextReminder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Next dose reminder at 8:00 PM"
+                android:textColor="@color/textColorSecondary"
+                android:textSize="12sp"
+                android:layout_marginTop="8dp"
+                android:visibility="visible"/>
+        </LinearLayout>
+
         <!-- Hidden button for logic -->
         <Button
             android:id="@+id/btnTaken"

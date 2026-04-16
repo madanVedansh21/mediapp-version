@@ -28,6 +28,7 @@
         <activity android:name=".ui.MedicineListActivity" />
         <activity android:name=".ui.SymptomLogActivity" />
         <activity android:name=".ui.EmergencyActivity" />
+        <activity android:name=".ui.LogHistoryActivity" />
 
     </application>
 

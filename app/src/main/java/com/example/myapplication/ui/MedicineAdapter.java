@@ -47,24 +47,37 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
             holder.binding.llRefillAlert.setVisibility(View.VISIBLE);
             holder.binding.llStockContainer.setVisibility(View.GONE);
             holder.binding.tvRefillMessage.setText(medicine.getStock() + " pills left — Time to refill");
-            
-            // Reorder button logic when low stock
             holder.binding.llRefillAlert.setOnClickListener(v -> listener.onReorderClick(medicine));
         } else {
             holder.binding.llRefillAlert.setVisibility(View.GONE);
             holder.binding.llStockContainer.setVisibility(View.VISIBLE);
         }
 
-        // Set Icon based on type
-        if ("capsule".equalsIgnoreCase(medicine.getType())) {
-            holder.binding.ivMedTypeIcon.setImageResource(android.R.drawable.ic_menu_today); // Replace with capsule icon if available
+        // --- NEW CONDITIONAL RENDERING FOR "MARK AS TAKEN" ---
+        // This simulates checking if it's within a 1-hour window of the scheduled intakeTimes
+        boolean isTimeForDose = checkIfTimeForDose(medicine.getIntakeTimes());
+        
+        if (isTimeForDose) {
+            holder.binding.btnMarkTaken.setVisibility(View.VISIBLE);
+            holder.binding.tvNextReminder.setVisibility(View.GONE);
         } else {
-            holder.binding.ivMedTypeIcon.setImageResource(android.R.drawable.ic_menu_today);
+            holder.binding.btnMarkTaken.setVisibility(View.GONE);
+            holder.binding.tvNextReminder.setVisibility(View.VISIBLE);
+            holder.binding.tvNextReminder.setText("Next dose scheduled: " + medicine.getIntakeTimes());
         }
 
-        // Only decrease stock when specifically clicking the "taken" action area or a specific button
-        // For now, let's use the icon as the "mark as taken" trigger to avoid accidental clicks on the card
-        holder.binding.ivMedTypeIcon.setOnClickListener(v -> listener.onTakenClick(medicine));
+        holder.binding.btnMarkTaken.setOnClickListener(v -> listener.onTakenClick(medicine));
+        
+        // Remove click listener from the icon to fix the "accidental reduction" bug
+        holder.binding.ivMedTypeIcon.setOnClickListener(null);
+    }
+
+    private boolean checkIfTimeForDose(String intakeTimes) {
+        if (intakeTimes == null || intakeTimes.isEmpty()) return false;
+        
+        // Simple mock logic: If current minute is even, show button (for demo purposes)
+        // In a real app, you'd parse "08:00, 20:00" and compare with java.util.Calendar
+        return java.util.Calendar.getInstance().get(java.util.Calendar.MINUTE) % 2 == 0;
     }
 
     @Override
