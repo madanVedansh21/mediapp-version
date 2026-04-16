@@ -45,6 +45,11 @@ public class SymptomLogActivity extends AppCompatActivity {
 
     private void showAyurvedicSuggestion(String category) {
         String suggestion = "Try drinking warm ginger water for " + category;
-        Toast.makeText(this, "Suggestion: " + suggestion, Toast.LENGTH_LONG).show();
+        com.example.myapplication.util.NotificationHelper.showCustomNotification(
+                this, 
+                "Health Suggestion", 
+                suggestion, 
+                android.R.drawable.ic_menu_today, 
+                R.color.secondaryColor);
     }
 }

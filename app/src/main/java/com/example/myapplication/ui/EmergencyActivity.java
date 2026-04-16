@@ -53,12 +53,22 @@ public class EmergencyActivity extends AppCompatActivity {
         MockApiService.sendEmergencyAlert("123 Health St, Metro City", "Aspirin, Lisinopril", new MockApiService.ApiCallback() {
             @Override
             public void onSuccess(String response) {
-                Toast.makeText(EmergencyActivity.this, "👉 " + response, Toast.LENGTH_LONG).show();
+                com.example.myapplication.util.NotificationHelper.showCustomNotification(
+                        EmergencyActivity.this,
+                        "Alert Successful",
+                        response,
+                        android.R.drawable.stat_sys_warning,
+                        R.color.accent_red);
             }
 
             @Override
             public void onError(String error) {
-                Toast.makeText(EmergencyActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                com.example.myapplication.util.NotificationHelper.showCustomNotification(
+                        EmergencyActivity.this,
+                        "Alert Failed",
+                        error,
+                        android.R.drawable.ic_dialog_alert,
+                        R.color.accent_red);
             }
         });
     }
