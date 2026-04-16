@@ -61,19 +61,27 @@ public class LogHistoryActivity extends AppCompatActivity {
     private void updateList(int position) {
         if (position == 0) {
             viewModel.getAllIntakeLogs().observe(this, logs -> {
-                List<String> displayLogs = new ArrayList<>();
+                List<LogDisplayItem> displayLogs = new ArrayList<>();
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault());
                 for (IntakeLog log : logs) {
-                    displayLogs.add(log.getMedicineName() + " - " + log.getStatus() + "\n" + sdf.format(new Date(log.getTimestamp())));
+                    displayLogs.add(new LogDisplayItem(
+                        log.getMedicineName(),
+                        sdf.format(new Date(log.getTimestamp())),
+                        log.getStatus()
+                    ));
                 }
                 adapter.setData(displayLogs);
             });
         } else {
             viewModel.getAllSymptomLogs().observe(this, logs -> {
-                List<String> displayLogs = new ArrayList<>();
+                List<LogDisplayItem> displayLogs = new ArrayList<>();
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault());
                 for (SymptomLog log : logs) {
-                    displayLogs.add(log.getCategory() + " (Severity: " + log.getSeverity() + ")\n" + log.getNotes() + "\n" + sdf.format(new Date(log.getTimestamp())));
+                    displayLogs.add(new LogDisplayItem(
+                        log.getCategory(),
+                        log.getNotes() + " (" + sdf.format(new Date(log.getTimestamp())) + ")",
+                        "Level " + log.getSeverity()
+                    ));
                 }
                 adapter.setData(displayLogs);
             });
@@ -81,9 +89,9 @@ public class LogHistoryActivity extends AppCompatActivity {
     }
 
     static class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
-        private List<String> data = new ArrayList<>();
+        private List<LogDisplayItem> data = new ArrayList<>();
 
-        public void setData(List<String> data) {
+        public void setData(List<LogDisplayItem> data) {
             this.data = data;
             notifyDataSetChanged();
         }
@@ -91,20 +99,46 @@ public class LogHistoryActivity extends AppCompatActivity {
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_log, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            ((TextView) holder.itemView).setText(data.get(position));
+            LogDisplayItem item = data.get(position);
+            holder.title.setText(item.title);
+            holder.subtitle.setText(item.subtitle);
+            holder.status.setText(item.status);
+            
+            if ("Missed".equalsIgnoreCase(item.status)) {
+                holder.status.setTextColor(0xFFC62828);
+                holder.status.setBackgroundColor(0xFFFFEBEE);
+            } else {
+                holder.status.setTextColor(0xFF2E7D32);
+                holder.status.setBackgroundColor(0xFFE8F5E9);
+            }
         }
 
         @Override
         public int getItemCount() { return data.size(); }
 
         static class ViewHolder extends RecyclerView.ViewHolder {
-            ViewHolder(View itemView) { super(itemView); }
+            TextView title, subtitle, status;
+            ViewHolder(View itemView) { 
+                super(itemView);
+                title = itemView.findViewById(R.id.tvLogTitle);
+                subtitle = itemView.findViewById(R.id.tvLogSubtitle);
+                status = itemView.findViewById(R.id.tvLogStatus);
+            }
+        }
+    }
+
+    static class LogDisplayItem {
+        String title, subtitle, status;
+        LogDisplayItem(String title, String subtitle, String status) {
+            this.title = title;
+            this.subtitle = subtitle;
+            this.status = status;
         }
     }
 }

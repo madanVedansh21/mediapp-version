@@ -75,9 +75,27 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
     private boolean checkIfTimeForDose(String intakeTimes) {
         if (intakeTimes == null || intakeTimes.isEmpty()) return false;
         
-        // Simple mock logic: If current minute is even, show button (for demo purposes)
-        // In a real app, you'd parse "08:00, 20:00" and compare with java.util.Calendar
-        return java.util.Calendar.getInstance().get(java.util.Calendar.MINUTE) % 2 == 0;
+        String[] times = intakeTimes.split(",");
+        java.util.Calendar now = java.util.Calendar.getInstance();
+        int currentHour = now.get(java.util.Calendar.HOUR_OF_DAY);
+        int currentMinute = now.get(java.util.Calendar.MINUTE);
+        
+        for (String timeStr : times) {
+            try {
+                String[] parts = timeStr.trim().split(":");
+                int schedHour = Integer.parseInt(parts[0]);
+                int schedMin = Integer.parseInt(parts[1]);
+                
+                // Allow "Mark as Taken" if within 1 hour before or 2 hours after scheduled time
+                int diffMinutes = (currentHour * 60 + currentMinute) - (schedHour * 60 + schedMin);
+                if (diffMinutes >= -60 && diffMinutes <= 120) {
+                    return true;
+                }
+            } catch (Exception e) {
+                // Ignore parsing errors
+            }
+        }
+        return false;
     }
 
     @Override
