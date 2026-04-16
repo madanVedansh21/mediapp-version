@@ -25,13 +25,16 @@ public class RegisterActivity extends AppCompatActivity {
             String email = binding.etEmail.getText().toString();
             String password = binding.etPassword.getText().toString();
             String emergencyContact = binding.etEmergencyContact.getText().toString();
+            String caretakerName = binding.etCaretakerName.getText().toString();
+            String caretakerPhone = binding.etCaretakerPhone.getText().toString();
+            String caretakerEmail = binding.etCaretakerEmail.getText().toString();
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty() || emergencyContact.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            User user = new User(name, email, password, emergencyContact, "City Hospital");
+            User user = new User(name, email, password, emergencyContact, caretakerName, caretakerPhone, caretakerEmail, "City Hospital");
             viewModel.register(user);
             
             Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();

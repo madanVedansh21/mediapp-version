@@ -47,6 +47,9 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
             holder.binding.llRefillAlert.setVisibility(View.VISIBLE);
             holder.binding.llStockContainer.setVisibility(View.GONE);
             holder.binding.tvRefillMessage.setText(medicine.getStock() + " pills left — Time to refill");
+            
+            // Reorder button logic when low stock
+            holder.binding.llRefillAlert.setOnClickListener(v -> listener.onReorderClick(medicine));
         } else {
             holder.binding.llRefillAlert.setVisibility(View.GONE);
             holder.binding.llStockContainer.setVisibility(View.VISIBLE);
@@ -59,7 +62,9 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
             holder.binding.ivMedTypeIcon.setImageResource(android.R.drawable.ic_menu_today);
         }
 
-        holder.itemView.setOnClickListener(v -> listener.onTakenClick(medicine));
+        // Only decrease stock when specifically clicking the "taken" action area or a specific button
+        // For now, let's use the icon as the "mark as taken" trigger to avoid accidental clicks on the card
+        holder.binding.ivMedTypeIcon.setOnClickListener(v -> listener.onTakenClick(medicine));
     }
 
     @Override

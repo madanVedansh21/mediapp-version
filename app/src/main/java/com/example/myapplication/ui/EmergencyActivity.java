@@ -54,10 +54,13 @@ public class EmergencyActivity extends AppCompatActivity {
         MockApiService.sendEmergencyAlert("123 Health St, Metro City", "Aspirin, Lisinopril", new MockApiService.ApiCallback() {
             @Override
             public void onSuccess(String response) {
+                // Also simulate sending to caretaker
+                String caretakerMsg = "SOS! Emergency alert sent to your caretaker and City Hospital.";
+                
                 com.example.myapplication.util.NotificationHelper.showCustomNotification(
                         EmergencyActivity.this,
-                        "Alert Successful",
-                        response,
+                        "Emergency Triggered",
+                        caretakerMsg,
                         android.R.drawable.stat_sys_warning,
                         R.color.accent_red);
             }

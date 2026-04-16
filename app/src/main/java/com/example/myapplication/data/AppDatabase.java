@@ -10,7 +10,7 @@ import com.example.myapplication.model.Medicine;
 import com.example.myapplication.model.SymptomLog;
 import com.example.myapplication.model.User;
 
-@Database(entities = {User.class, Medicine.class, IntakeLog.class, SymptomLog.class}, version = 1)
+@Database(entities = {User.class, Medicine.class, IntakeLog.class, SymptomLog.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 
@@ -25,6 +25,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "medibuddy_database")
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

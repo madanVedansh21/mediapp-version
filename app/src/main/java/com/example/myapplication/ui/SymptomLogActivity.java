@@ -45,10 +45,22 @@ public class SymptomLogActivity extends AppCompatActivity {
     }
 
     private void showAyurvedicSuggestion(String category) {
-        String suggestion = "Try drinking warm ginger water for " + category;
+        String suggestion;
+        if (category.toLowerCase().contains("headache")) {
+            suggestion = "Apply ginger paste or drink chamomile tea.";
+        } else if (category.toLowerCase().contains("stomach") || category.toLowerCase().contains("digestion")) {
+            suggestion = "Drink warm fennel water or chew carom seeds (Ajwain).";
+        } else if (category.toLowerCase().contains("fever")) {
+            suggestion = "Rest and drink Tulsi (Basil) tea.";
+        } else if (category.toLowerCase().contains("cough") || category.toLowerCase().contains("cold")) {
+            suggestion = "Take honey with a pinch of turmeric and ginger.";
+        } else {
+            suggestion = "Try drinking warm ginger water for " + category + ". Maintain hydration.";
+        }
+
         com.example.myapplication.util.NotificationHelper.showCustomNotification(
                 this, 
-                "Health Suggestion", 
+                "Ayurvedic Suggestion",
                 suggestion, 
                 android.R.drawable.ic_menu_today, 
                 R.color.secondaryColor);

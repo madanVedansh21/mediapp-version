@@ -26,8 +26,9 @@ public class AddMedicineActivity extends AppCompatActivity {
             String frequencyStr = binding.etFrequency.getText().toString();
             String stockStr = binding.etStock.getText().toString();
             String thresholdStr = binding.etThreshold.getText().toString();
+            String schedule = binding.etSchedule.getText().toString();
 
-            if (name.isEmpty() || frequencyStr.isEmpty() || stockStr.isEmpty()) {
+            if (name.isEmpty() || frequencyStr.isEmpty() || stockStr.isEmpty() || schedule.isEmpty()) {
                 Toast.makeText(this, "Please fill required fields", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -37,8 +38,9 @@ public class AddMedicineActivity extends AppCompatActivity {
             int threshold = Integer.parseInt(thresholdStr);
 
             Medicine medicine = new Medicine(name, type, dosage, frequency, 
-                    "08:00, 20:00", // Default logic for schedule
-                    "2023-10-27", 30, false, stock, threshold);
+                    schedule, 
+                    new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date()), 
+                    30, false, stock, threshold);
             
             viewModel.addMedicine(medicine);
             Toast.makeText(this, "Medicine Added", Toast.LENGTH_SHORT).show();
