@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MediBuddy</string>
+    <string-array name="med_types">
+        <item>Tablet</item>
+        <item>Capsule</item>
+        <item>Liquid</item>
+    </string-array>
+</resources>

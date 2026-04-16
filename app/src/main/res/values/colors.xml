@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Premium Medical Palette -->
+    <color name="primaryColor">#0D47A1</color>
+    <color name="primaryLightColor">#5472d3</color>
+    <color name="primaryDarkColor">#002171</color>
+    <color name="secondaryColor">#26A69A</color>
+    <color name="secondaryLightColor">#64d8cb</color>
+    <color name="secondaryDarkColor">#00796b</color>
+
+    <color name="backgroundColor">#F8F9FD</color>
+    <color name="surfaceColor">#FFFFFF</color>
+    <color name="textColorPrimary">#1A237E</color>
+    <color name="textColorSecondary">#757575</color>
+
+    <color name="glow_blue">#400D47A1</color>
+    <color name="accent_red">#FF5252</color>
+    <color name="accent_green">#66BB6A</color>
+</resources>
