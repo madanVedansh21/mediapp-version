@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.myapplication.model.User;
 
@@ -19,4 +20,7 @@ public interface UserDao {
 
     @Query("SELECT * FROM users LIMIT 1")
     LiveData<User> getUser();
+
+    @Update
+    void update(User user);
 }

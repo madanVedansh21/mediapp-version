@@ -34,7 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            User user = new User(name, email, password, emergencyContact, caretakerName, caretakerPhone, caretakerEmail, "City Hospital");
+            User user = new User(name, email, password, emergencyContact, caretakerName, caretakerPhone, caretakerEmail, "City Hospital", "", "", "", "");
             viewModel.register(user);
             
             Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();

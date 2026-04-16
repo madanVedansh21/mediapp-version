@@ -10,6 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="24dp"
         app:title="Health History"
         app:titleTextColor="@color/textColorPrimary"
         android:background="@color/white"

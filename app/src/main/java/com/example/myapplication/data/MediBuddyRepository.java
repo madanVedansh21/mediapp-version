@@ -40,6 +40,10 @@ public class MediBuddyRepository {
         return userDao.getUser();
     }
 
+    public void updateUser(User user) {
+        executorService.execute(() -> userDao.update(user));
+    }
+
     // Medicine operations
     public void insertMedicine(Medicine medicine) {
         executorService.execute(() -> medicineDao.insert(medicine));
@@ -47,6 +51,10 @@ public class MediBuddyRepository {
 
     public void updateMedicine(Medicine medicine) {
         executorService.execute(() -> medicineDao.update(medicine));
+    }
+
+    public void deleteMedicine(Medicine medicine) {
+        executorService.execute(() -> medicineDao.delete(medicine));
     }
 
     public LiveData<List<Medicine>> getAllMedicines() {

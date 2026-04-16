@@ -47,4 +47,17 @@ public class MedicineListActivity extends AppCompatActivity implements MedicineA
             Toast.makeText(this, "Out of stock! Please reorder.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onDeleteClick(Medicine medicine) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete Medicine")
+                .setMessage("Are you sure you want to delete " + medicine.getName() + "?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    viewModel.deleteMedicine(medicine);
+                    Toast.makeText(this, "Medicine deleted", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
 }

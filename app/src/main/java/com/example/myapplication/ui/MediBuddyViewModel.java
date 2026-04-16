@@ -23,11 +23,13 @@ public class MediBuddyViewModel extends AndroidViewModel {
 
     // User
     public void register(User user) { repository.register(user); }
+    public void updateUser(User user) { repository.updateUser(user); }
     public LiveData<User> getUser() { return repository.getUser(); }
 
     // Medicine
     public void addMedicine(Medicine medicine) { repository.insertMedicine(medicine); }
     public void updateMedicine(Medicine medicine) { repository.updateMedicine(medicine); }
+    public void deleteMedicine(Medicine medicine) { repository.deleteMedicine(medicine); }
     public LiveData<List<Medicine>> getAllMedicines() { return repository.getAllMedicines(); }
     public LiveData<List<Medicine>> getLowStockMedicines() { return repository.getLowStockMedicines(); }
 

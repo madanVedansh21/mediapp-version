@@ -159,30 +159,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnMarkTaken"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="54dp"
-                android:text="MARK AS TAKEN"
+                android:layout_weight="1"
+                android:text="TAKEN"
                 android:textAllCaps="true"
                 android:textStyle="bold"
                 app:cornerRadius="14dp"
                 android:backgroundTint="@color/primaryColor"
                 android:visibility="gone"/>
 
-            <TextView
-                android:id="@+id/tvNextReminder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Next dose reminder at 8:00 PM"
-                android:textColor="@color/textColorSecondary"
-                android:textSize="12sp"
-                android:layout_marginTop="8dp"
-                android:visibility="visible"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteMed"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_marginStart="12dp"
+                android:padding="0dp"
+                app:icon="@android:drawable/ic_menu_delete"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:cornerRadius="14dp"
+                android:backgroundTint="#FFE0E0"
+                app:iconTint="@color/accent_red"
+                style="@style/Widget.Material3.Button.Icon"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvNextReminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Next dose reminder at 8:00 PM"
+            android:textColor="@color/textColorSecondary"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:visibility="visible"/>
 
         <!-- Hidden button for logic -->
         <Button

@@ -13,6 +13,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:layout_marginTop="24dp"
             app:title="Symptom Journal"
             app:titleTextColor="@color/textColorPrimary"
             android:fontFamily="sans-serif-black"/>

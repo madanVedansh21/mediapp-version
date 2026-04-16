@@ -17,6 +17,7 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
     public interface OnMedicineActionListener {
         void onReorderClick(Medicine medicine);
         void onTakenClick(Medicine medicine);
+        void onDeleteClick(Medicine medicine);
     }
 
     public MedicineAdapter(OnMedicineActionListener listener) {
@@ -67,7 +68,9 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
         }
 
         holder.binding.btnMarkTaken.setOnClickListener(v -> listener.onTakenClick(medicine));
-        
+
+        holder.binding.btnDeleteMed.setOnClickListener(v -> listener.onDeleteClick(medicine));
+
         // Remove click listener from the icon to fix the "accidental reduction" bug
         holder.binding.ivMedTypeIcon.setOnClickListener(null);
     }

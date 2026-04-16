@@ -15,8 +15,12 @@ public class User {
     private String caretakerPhone;
     private String caretakerEmail;
     private String hospital;
+    private String hospitalPhone;
+    private String doctorName;
+    private String doctorPhone;
+    private String doctorEmail;
 
-    public User(String name, String email, String password, String emergencyContact, String caretakerName, String caretakerPhone, String caretakerEmail, String hospital) {
+    public User(String name, String email, String password, String emergencyContact, String caretakerName, String caretakerPhone, String caretakerEmail, String hospital, String hospitalPhone, String doctorName, String doctorPhone, String doctorEmail) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -25,6 +29,10 @@ public class User {
         this.caretakerPhone = caretakerPhone;
         this.caretakerEmail = caretakerEmail;
         this.hospital = hospital;
+        this.hospitalPhone = hospitalPhone;
+        this.doctorName = doctorName;
+        this.doctorPhone = doctorPhone;
+        this.doctorEmail = doctorEmail;
     }
 
     public int getId() { return id; }
@@ -37,4 +45,8 @@ public class User {
     public String getCaretakerPhone() { return caretakerPhone; }
     public String getCaretakerEmail() { return caretakerEmail; }
     public String getHospital() { return hospital; }
+    public String getHospitalPhone() { return hospitalPhone; }
+    public String getDoctorName() { return doctorName; }
+    public String getDoctorPhone() { return doctorPhone; }
+    public String getDoctorEmail() { return doctorEmail; }
 }
