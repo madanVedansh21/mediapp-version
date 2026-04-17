@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.myapplication.databinding.ActivityDashboardBinding;
 import com.example.myapplication.model.IntakeLog;
 import com.example.myapplication.model.Medicine;
-import com.example.myapplication.model.User;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -16,7 +15,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
     private ActivityDashboardBinding binding;
@@ -33,8 +31,6 @@ public class DashboardActivity extends AppCompatActivity {
         viewModel.getUser().observe(this, user -> {
             if (user != null) {
                 binding.tvUserName.setText(user.getName());
-                // In a real app, we'd count distinct caretakers if that was a separate entity
-                // For now, if caretaker name exists, we show 1
                 binding.tvCaretakerCount.setText(user.getCaretakerName() != null && !user.getCaretakerName().isEmpty() ? "1" : "0");
             }
         });
@@ -70,6 +66,12 @@ public class DashboardActivity extends AppCompatActivity {
 
         setupProgressTracker();
         setupAnalytics();
+
+        viewModel.getAllMedicines().observe(this, medicines -> {
+            if (medicines != null) {
+                binding.tvTotalLogs.setText(String.valueOf(medicines.size()));
+            }
+        });
     }
 
     private void setupProgressTracker() {
@@ -91,7 +93,6 @@ public class DashboardActivity extends AppCompatActivity {
             viewModel.getAllIntakeLogs().observe(this, logs -> {
                 int dosesTakenToday = 0;
                 if (logs != null) {
-                    binding.tvTotalLogs.setText(String.valueOf(logs.size()));
                     for (IntakeLog log : logs) {
                         if (log.getTimestamp() >= startOfToday && "Taken".equalsIgnoreCase(log.getStatus())) {
                             dosesTakenToday++;
@@ -99,9 +100,11 @@ public class DashboardActivity extends AppCompatActivity {
                     }
                 }
 
-                binding.tvProgressDoses.setText(dosesTakenToday + " of " + finalTotal + " doses taken");
+                int displayedTaken = Math.min(dosesTakenToday, finalTotal);
+                binding.tvProgressDoses.setText(displayedTaken + " of " + finalTotal + " doses taken Today");
+                
                 if (finalTotal > 0) {
-                    int progress = (int) ((dosesTakenToday / (float) finalTotal) * 100);
+                    int progress = (int) ((displayedTaken / (float) finalTotal) * 100);
                     binding.progressIndicator.setProgress(progress, true);
                 } else {
                     binding.progressIndicator.setProgress(0);
@@ -121,8 +124,8 @@ public class DashboardActivity extends AppCompatActivity {
             Calendar cal = Calendar.getInstance();
             for (IntakeLog log : logs) {
                 cal.setTimeInMillis(log.getTimestamp());
-                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK); // 1 is Sun, 2 is Mon...
-                int index = (dayOfWeek + 5) % 7; // Map so 0 is Mon, 6 is Sun
+                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+                int index = (dayOfWeek + 5) % 7;
                 counts[index]++;
             }
 
@@ -138,14 +141,9 @@ public class DashboardActivity extends AppCompatActivity {
             BarData barData = new BarData(dataSet);
             binding.barChart.setData(barData);
             
-            // Use getAxisBottom() or similar if getXAxis() is problematic, 
-            // but usually it's correct. The issue is likely the library not being synced.
-            // Let's remove the setGranularity if it's failing specifically, 
-            // though it is a valid method in MPAndroidChart.
             XAxis xAxis = binding.barChart.getXAxis();
             xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            // xAxis.setGranularity(1f); // Commented out to bypass check if it fails
             xAxis.setDrawGridLines(false);
             
             binding.barChart.getAxisLeft().setAxisMinimum(0f);

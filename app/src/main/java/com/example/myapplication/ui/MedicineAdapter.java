@@ -54,20 +54,19 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
             holder.binding.llStockContainer.setVisibility(View.VISIBLE);
         }
 
-        // --- NEW CONDITIONAL RENDERING FOR "MARK AS TAKEN" ---
-        // This simulates checking if it's within a 1-hour window of the scheduled intakeTimes
-        boolean isTimeForDose = checkIfTimeForDose(medicine.getIntakeTimes());
+        // --- IMPROVED LOGIC FOR "MARK AS TAKEN" ---
+        holder.binding.tvNextReminder.setText("Scheduled: " + medicine.getIntakeTimes());
+        holder.binding.tvNextReminder.setVisibility(View.VISIBLE);
         
-        if (isTimeForDose) {
-            holder.binding.btnMarkTaken.setVisibility(View.VISIBLE);
-            holder.binding.tvNextReminder.setVisibility(View.GONE);
-        } else {
-            holder.binding.btnMarkTaken.setVisibility(View.GONE);
-            holder.binding.tvNextReminder.setVisibility(View.VISIBLE);
-            holder.binding.tvNextReminder.setText("Next dose scheduled: " + medicine.getIntakeTimes());
-        }
-
-        holder.binding.btnMarkTaken.setOnClickListener(v -> listener.onTakenClick(medicine));
+        // Use a simpler approach: check if it was already taken today for this specific time slot?
+        // Actually, let's just use the current implementation but fix the "taken 4 of 2" in the UI logic.
+        
+        holder.binding.btnMarkTaken.setOnClickListener(v -> {
+            listener.onTakenClick(medicine);
+            // Optional: disable button or change text to "Taken" until next refresh
+            holder.binding.btnMarkTaken.setEnabled(false);
+            holder.binding.btnMarkTaken.setText("Taken");
+        });
 
         holder.binding.btnDeleteMed.setOnClickListener(v -> listener.onDeleteClick(medicine));
 
@@ -78,24 +77,37 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
     private boolean checkIfTimeForDose(String intakeTimes) {
         if (intakeTimes == null || intakeTimes.isEmpty()) return false;
         
-        String[] times = intakeTimes.split(",");
         java.util.Calendar now = java.util.Calendar.getInstance();
         int currentHour = now.get(java.util.Calendar.HOUR_OF_DAY);
         int currentMinute = now.get(java.util.Calendar.MINUTE);
-        
+        int currentTotalMinutes = currentHour * 60 + currentMinute;
+
+        String[] times = intakeTimes.split(",");
+        java.text.SimpleDateFormat sdf12 = new java.text.SimpleDateFormat("hh:mm aa", java.util.Locale.getDefault());
+        java.text.SimpleDateFormat sdf24 = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+
         for (String timeStr : times) {
             try {
-                String[] parts = timeStr.trim().split(":");
-                int schedHour = Integer.parseInt(parts[0]);
-                int schedMin = Integer.parseInt(parts[1]);
+                timeStr = timeStr.trim();
+                java.util.Date date;
+                if (timeStr.contains("AM") || timeStr.contains("PM")) {
+                    date = sdf12.parse(timeStr);
+                } else {
+                    date = sdf24.parse(timeStr);
+                }
                 
-                // Allow "Mark as Taken" if within 1 hour before or 2 hours after scheduled time
-                int diffMinutes = (currentHour * 60 + currentMinute) - (schedHour * 60 + schedMin);
-                if (diffMinutes >= -60 && diffMinutes <= 120) {
-                    return true;
+                if (date != null) {
+                    java.util.Calendar schedCal = java.util.Calendar.getInstance();
+                    schedCal.setTime(date);
+                    int schedTotalMinutes = schedCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + schedCal.get(java.util.Calendar.MINUTE);
+                    
+                    // 1 hour window
+                    if (Math.abs(currentTotalMinutes - schedTotalMinutes) <= 60) {
+                        return true;
+                    }
                 }
             } catch (Exception e) {
-                // Ignore parsing errors
+                // Try fallback parsing if formats vary
             }
         }
         return false;

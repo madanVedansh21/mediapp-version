@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.myapplication.databinding.ActivityAddMedicineBinding;
 import com.example.myapplication.model.Medicine;
+import java.util.Calendar;
 
 public class AddMedicineActivity extends AppCompatActivity {
     private ActivityAddMedicineBinding binding;
@@ -18,6 +19,20 @@ public class AddMedicineActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(MediBuddyViewModel.class);
+
+        binding.etSchedule.setOnClickListener(v -> {
+            Calendar mcurrentTime = Calendar.getInstance();
+            int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+            int minute = mcurrentTime.get(Calendar.MINUTE);
+            android.app.TimePickerDialog mTimePicker;
+            mTimePicker = new android.app.TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
+                String am_pm = (selectedHour < 12) ? "AM" : "PM";
+                int hour12 = (selectedHour == 0 || selectedHour == 12) ? 12 : selectedHour % 12;
+                binding.etSchedule.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d %s", hour12, selectedMinute, am_pm));
+            }, hour, minute, false); // 'false' for 12-hour view
+            mTimePicker.setTitle("Select Intake Time");
+            mTimePicker.show();
+        });
 
         binding.btnSaveMedicine.setOnClickListener(v -> {
             String name = binding.etMedName.getText().toString();
