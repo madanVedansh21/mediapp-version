@@ -31,7 +31,7 @@ public class EmergencyActivity extends AppCompatActivity {
     }
 
     private void startCountdown() {
-        timer = new CountDownTimer(10000, 1000) {
+        timer = new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 binding.tvCountdown.setText(String.valueOf(millisUntilFinished / 1000));
