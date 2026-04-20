@@ -51,8 +51,15 @@ public class MedicineListActivity extends AppCompatActivity implements MedicineA
 
     @Override
     public void onReorderClick(Medicine medicine) {
-        Toast.makeText(this, "Reordering " + medicine.getName() + "...", Toast.LENGTH_SHORT).show();
-        viewModel.reorderMedicine(medicine);
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Refill Medicine")
+                .setMessage("Your stock for " + medicine.getName() + " is low. Would you like to place an order to City General Hospital Pharmacy?")
+                .setPositiveButton("Order Now", (dialog, which) -> {
+                    Toast.makeText(this, "Placing order...", Toast.LENGTH_SHORT).show();
+                    viewModel.reorderMedicine(medicine);
+                })
+                .setNegativeButton("Later", null)
+                .show();
     }
 
     @Override

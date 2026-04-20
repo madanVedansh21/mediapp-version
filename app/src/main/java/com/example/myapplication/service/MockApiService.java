@@ -12,9 +12,9 @@ public class MockApiService {
 
     public static void placeMedicineOrder(String medicineName, ApiCallback callback) {
         // Simulate POST /mock/pharmacy/order
-        new android.os.Handler().postDelayed(() -> {
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
             Log.d(TAG, "Ordering medicine: " + medicineName);
-            callback.onSuccess("Order placed successfully for " + medicineName);
+            callback.onSuccess("Order placed for " + medicineName + " to City General Hospital Pharmacy");
         }, 1500);
     }
 
