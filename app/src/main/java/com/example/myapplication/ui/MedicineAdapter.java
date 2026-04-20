@@ -12,11 +12,12 @@ import java.util.List;
 
 public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.MedicineViewHolder> {
     private List<Medicine> medicines = new ArrayList<>();
+    private List<com.example.myapplication.model.IntakeLog> intakeLogs = new ArrayList<>();
     private final OnMedicineActionListener listener;
 
     public interface OnMedicineActionListener {
         void onReorderClick(Medicine medicine);
-        void onTakenClick(Medicine medicine);
+        void onTakenClick(Medicine medicine, boolean isWithinWindow);
         void onDeleteClick(Medicine medicine);
     }
 
@@ -24,8 +25,9 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
         this.listener = listener;
     }
 
-    public void setMedicines(List<Medicine> medicines) {
+    public void setMedicines(List<Medicine> medicines, List<com.example.myapplication.model.IntakeLog> logs) {
         this.medicines = medicines;
+        this.intakeLogs = logs != null ? logs : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -54,64 +56,163 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
             holder.binding.llStockContainer.setVisibility(View.VISIBLE);
         }
 
-        // --- IMPROVED LOGIC FOR "MARK AS TAKEN" ---
-        holder.binding.tvNextReminder.setText("Scheduled: " + medicine.getIntakeTimes());
-        holder.binding.tvNextReminder.setVisibility(View.VISIBLE);
-        
-        // Use a simpler approach: check if it was already taken today for this specific time slot?
-        // Actually, let's just use the current implementation but fix the "taken 4 of 2" in the UI logic.
-        
+        updateIntakeUI(holder, medicine);
+
         holder.binding.btnMarkTaken.setOnClickListener(v -> {
-            listener.onTakenClick(medicine);
-            // Optional: disable button or change text to "Taken" until next refresh
-            holder.binding.btnMarkTaken.setEnabled(false);
-            holder.binding.btnMarkTaken.setText("Taken");
+            // Re-verify window on click for safety
+            boolean canTakeNow = isWithinDosingWindow(medicine.getIntakeTimes());
+            listener.onTakenClick(medicine, canTakeNow);
+            if (canTakeNow) {
+                holder.binding.btnMarkTaken.setEnabled(false);
+                holder.binding.btnMarkTaken.setText("Taken");
+            }
         });
 
         holder.binding.btnDeleteMed.setOnClickListener(v -> listener.onDeleteClick(medicine));
-
-        // Remove click listener from the icon to fix the "accidental reduction" bug
         holder.binding.ivMedTypeIcon.setOnClickListener(null);
     }
 
-    private boolean checkIfTimeForDose(String intakeTimes) {
+    private boolean isWithinDosingWindow(String intakeTimes) {
         if (intakeTimes == null || intakeTimes.isEmpty()) return false;
-        
-        java.util.Calendar now = java.util.Calendar.getInstance();
-        int currentHour = now.get(java.util.Calendar.HOUR_OF_DAY);
-        int currentMinute = now.get(java.util.Calendar.MINUTE);
-        int currentTotalMinutes = currentHour * 60 + currentMinute;
-
         String[] times = intakeTimes.split(",");
-        java.text.SimpleDateFormat sdf12 = new java.text.SimpleDateFormat("hh:mm aa", java.util.Locale.getDefault());
-        java.text.SimpleDateFormat sdf24 = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
+        java.util.Calendar now = java.util.Calendar.getInstance();
+        int nowTotal = now.get(java.util.Calendar.HOUR_OF_DAY) * 60 + now.get(java.util.Calendar.MINUTE);
+        String[] formats = {"hh:mm a", "h:mm a", "hh:mm aa", "h:mm aa", "HH:mm", "H:mm"};
 
-        for (String timeStr : times) {
-            try {
-                timeStr = timeStr.trim();
-                java.util.Date date;
-                if (timeStr.contains("AM") || timeStr.contains("PM")) {
-                    date = sdf12.parse(timeStr);
-                } else {
-                    date = sdf24.parse(timeStr);
-                }
-                
-                if (date != null) {
-                    java.util.Calendar schedCal = java.util.Calendar.getInstance();
-                    schedCal.setTime(date);
-                    int schedTotalMinutes = schedCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + schedCal.get(java.util.Calendar.MINUTE);
-                    
-                    // 1 hour window
-                    if (Math.abs(currentTotalMinutes - schedTotalMinutes) <= 60) {
-                        return true;
+        for (String t : times) {
+            t = t.trim();
+            for (String format : formats) {
+                try {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(format, java.util.Locale.US);
+                    java.util.Date date = sdf.parse(t);
+                    if (date != null) {
+                        java.util.Calendar schedCal = java.util.Calendar.getInstance();
+                        schedCal.setTime(date);
+                        int schedTotal = schedCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + schedCal.get(java.util.Calendar.MINUTE);
+                        if (Math.abs(schedTotal - nowTotal) <= 60) return true;
                     }
-                }
-            } catch (Exception e) {
-                // Try fallback parsing if formats vary
+                } catch (Exception ignored) {}
             }
         }
         return false;
     }
+
+    private boolean isAlreadyTaken(int medId, int schedTotalMinutes) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        int todayYear = cal.get(java.util.Calendar.YEAR);
+        int todayDay = cal.get(java.util.Calendar.DAY_OF_YEAR);
+
+        for (com.example.myapplication.model.IntakeLog log : intakeLogs) {
+            if (log.getMedicineId() == medId) {
+                java.util.Calendar logCal = java.util.Calendar.getInstance();
+                logCal.setTimeInMillis(log.getTimestamp());
+                
+                // Check if log is from today
+                if (logCal.get(java.util.Calendar.YEAR) == todayYear && 
+                    logCal.get(java.util.Calendar.DAY_OF_YEAR) == todayDay) {
+                    
+                    int logTotal = logCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + logCal.get(java.util.Calendar.MINUTE);
+                    // If log is within 60 mins of this specific schedule, it's taken
+                    if (Math.abs(logTotal - schedTotalMinutes) <= 60) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void updateIntakeUI(MedicineViewHolder holder, Medicine medicine) {
+        try {
+            String intakeTimes = medicine.getIntakeTimes();
+            if (intakeTimes == null || intakeTimes.isEmpty()) {
+                holder.binding.tvNextIntakeTime.setText("No schedule set");
+                holder.binding.btnMarkTaken.setVisibility(View.GONE);
+                holder.binding.tvNextReminder.setVisibility(View.GONE);
+                return;
+            }
+
+            String[] times = intakeTimes.split(",");
+            java.util.Calendar now = java.util.Calendar.getInstance();
+            int nowTotal = now.get(java.util.Calendar.HOUR_OF_DAY) * 60 + now.get(java.util.Calendar.MINUTE);
+
+            String bestNextTime = null;
+            int minFutureDiff = Integer.MAX_VALUE;
+            String earliestTimeToday = null;
+            int minTotalToday = Integer.MAX_VALUE;
+            boolean canTakeNow = false;
+            boolean alreadyTakenNow = false;
+
+            String[] formats = {"hh:mm a", "h:mm a", "hh:mm aa", "h:mm aa", "HH:mm", "H:mm"};
+
+            for (String t : times) {
+                t = t.trim();
+                if (t.isEmpty()) continue;
+                
+                java.util.Date date = null;
+                for (String format : formats) {
+                    try {
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(format, java.util.Locale.US);
+                        date = sdf.parse(t);
+                        if (date != null) break;
+                    } catch (Exception ignored) {}
+                }
+
+                if (date != null) {
+                    java.util.Calendar schedCal = java.util.Calendar.getInstance();
+                    schedCal.setTime(date);
+                    int schedTotal = schedCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + schedCal.get(java.util.Calendar.MINUTE);
+
+                    int diff = schedTotal - nowTotal;
+                    
+                    if (Math.abs(diff) <= 60) {
+                        canTakeNow = true;
+                        if (isAlreadyTaken(medicine.getId(), schedTotal)) {
+                            alreadyTakenNow = true;
+                        }
+                    }
+
+                    if (diff > 0 && diff < minFutureDiff) {
+                        minFutureDiff = diff;
+                        bestNextTime = t;
+                    }
+                    if (schedTotal < minTotalToday) {
+                        minTotalToday = schedTotal;
+                        earliestTimeToday = t;
+                    }
+                }
+            }
+
+            String resultText;
+            if (bestNextTime != null) {
+                resultText = "Today, " + bestNextTime;
+            } else if (earliestTimeToday != null) {
+                resultText = "Tomorrow, " + earliestTimeToday;
+            } else {
+                resultText = "Schedule Error";
+            }
+
+            holder.binding.tvNextIntakeTime.setText(resultText);
+            holder.binding.tvNextReminder.setText("Scheduled: " + intakeTimes);
+            holder.binding.tvNextReminder.setVisibility(View.VISIBLE);
+
+            if (canTakeNow && !alreadyTakenNow) {
+                holder.binding.btnMarkTaken.setVisibility(View.VISIBLE);
+                holder.binding.btnMarkTaken.setEnabled(true);
+                holder.binding.btnMarkTaken.setText("TAKEN");
+            } else if (alreadyTakenNow) {
+                holder.binding.btnMarkTaken.setVisibility(View.VISIBLE);
+                holder.binding.btnMarkTaken.setEnabled(false);
+                holder.binding.btnMarkTaken.setText("TAKEN");
+            } else {
+                holder.binding.btnMarkTaken.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            holder.binding.tvNextIntakeTime.setText("Error updating");
+            holder.binding.btnMarkTaken.setVisibility(View.GONE);
+        }
+    }
+
 
     @Override
     public int getItemCount() {

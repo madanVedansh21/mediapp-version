@@ -19,4 +19,7 @@ public interface IntakeLogDao {
 
     @Query("SELECT * FROM intake_logs WHERE timestamp >= :since ORDER BY timestamp DESC")
     LiveData<List<IntakeLog>> getRecentLogs(long since);
+
+    @Query("SELECT * FROM intake_logs WHERE medicineId = :medId AND timestamp >= :since")
+    List<IntakeLog> getLogsForMedicineSince(int medId, long since);
 }

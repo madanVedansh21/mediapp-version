@@ -14,14 +14,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@android:drawable/ic_menu_today"
-            app:tint="@color/primaryColor"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_logo"
             android:layout_gravity="center"
-            android:background="@drawable/card_premium_bg"
-            android:padding="16dp"
-            android:elevation="8dp"
             android:layout_marginBottom="24dp"/>
 
         <TextView

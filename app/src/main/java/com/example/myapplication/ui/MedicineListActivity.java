@@ -26,8 +26,27 @@ public class MedicineListActivity extends AppCompatActivity implements MedicineA
         binding.rvMedicines.setAdapter(adapter);
 
         viewModel.getAllMedicines().observe(this, medicines -> {
-            adapter.setMedicines(medicines);
+            viewModel.getAllIntakeLogs().observe(this, logs -> {
+                adapter.setMedicines(medicines, logs);
+            });
         });
+
+        binding.btnRefresh.setOnClickListener(v -> {
+            adapter.notifyDataSetChanged();
+            Toast.makeText(this, "Refreshed", Toast.LENGTH_SHORT).show();
+        });
+        
+        // Auto-refresh every minute to keep "Next Intake" and "Taken" button synced with real time
+        android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isFinishing()) {
+                    adapter.notifyDataSetChanged();
+                    handler.postDelayed(this, 60000); // 1 minute
+                }
+            }
+        }, 60000);
     }
 
     @Override
@@ -37,7 +56,12 @@ public class MedicineListActivity extends AppCompatActivity implements MedicineA
     }
 
     @Override
-    public void onTakenClick(Medicine medicine) {
+    public void onTakenClick(Medicine medicine, boolean isWithinWindow) {
+        if (!isWithinWindow) {
+            Toast.makeText(this, "It's not time for this medicine yet!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (medicine.getStock() > 0) {
             medicine.setStock(medicine.getStock() - 1);
             viewModel.updateMedicine(medicine);
