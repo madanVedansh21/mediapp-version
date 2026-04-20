@@ -21,17 +21,21 @@ public class AddMedicineActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MediBuddyViewModel.class);
 
         binding.etSchedule.setOnClickListener(v -> {
-            Calendar mcurrentTime = Calendar.getInstance();
-            int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-            int minute = mcurrentTime.get(Calendar.MINUTE);
-            android.app.TimePickerDialog mTimePicker;
-            mTimePicker = new android.app.TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
-                String am_pm = (selectedHour < 12) ? "AM" : "PM";
-                int hour12 = (selectedHour == 0 || selectedHour == 12) ? 12 : selectedHour % 12;
-                binding.etSchedule.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d %s", hour12, selectedMinute, am_pm));
-            }, hour, minute, false); // 'false' for 12-hour view
-            mTimePicker.setTitle("Select Intake Time");
-            mTimePicker.show();
+            String freqStr = binding.etFrequency.getText().toString();
+            if (freqStr.isEmpty()) {
+                Toast.makeText(this, "Please enter frequency first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                int frequency = Integer.parseInt(freqStr);
+                if (frequency <= 0) {
+                    Toast.makeText(this, "Frequency must be at least 1", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                pickTimes(frequency, 1, "");
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid frequency", Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.btnSaveMedicine.setOnClickListener(v -> {
@@ -62,4 +66,29 @@ public class AddMedicineActivity extends AppCompatActivity {
             finish();
         });
     }
+
+    private void pickTimes(int total, int current, String accumulatedTimes) {
+        Calendar mcurrentTime = Calendar.getInstance();
+        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(Calendar.MINUTE);
+        
+        android.app.TimePickerDialog mTimePicker;
+        mTimePicker = new android.app.TimePickerDialog(this, (timePicker, selectedHour, selectedMinute) -> {
+            String am_pm = (selectedHour < 12) ? "AM" : "PM";
+            int hour12 = (selectedHour == 0 || selectedHour == 12) ? 12 : selectedHour % 12;
+            String selectedTime = String.format(java.util.Locale.getDefault(), "%02d:%02d %s", hour12, selectedMinute, am_pm);
+            
+            String newAccumulated = accumulatedTimes.isEmpty() ? selectedTime : accumulatedTimes + ", " + selectedTime;
+            
+            if (current < total) {
+                pickTimes(total, current + 1, newAccumulated);
+            } else {
+                binding.etSchedule.setText(newAccumulated);
+            }
+        }, hour, minute, false);
+        
+        mTimePicker.setTitle("Select Time for Dose " + current + " of " + total);
+        mTimePicker.show();
+    }
+
 }
