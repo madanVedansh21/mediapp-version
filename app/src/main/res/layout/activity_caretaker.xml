@@ -40,6 +40,22 @@
                 android:layout_marginBottom="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCountryCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Country Code"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_marginBottom="12dp">
+                <AutoCompleteTextView
+                    android:id="@+id/actvCountryCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:importantForAutofill="no"
+                    android:hint="+91"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Caretaker Name"
@@ -55,14 +71,15 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Caretaker Phone"
+                android:hint="Caretaker Phone Number"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCaretakerPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="number"
+                    android:maxLength="14"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -102,14 +119,15 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Hospital Phone"
+                android:hint="Hospital Phone Number"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etHospitalPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="number"
+                    android:maxLength="14"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -127,14 +145,15 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Doctor Phone"
+                android:hint="Doctor Phone Number"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDoctorPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="number"
+                    android:maxLength="14"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton

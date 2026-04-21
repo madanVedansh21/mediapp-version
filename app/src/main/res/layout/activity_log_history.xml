@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F8F9FA">
+    android:background="@drawable/bg_gradient_soft">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -13,14 +13,36 @@
         android:layout_marginTop="24dp"
         app:title="Health History"
         app:titleTextColor="@color/textColorPrimary"
-        android:background="@color/white"
+        android:background="@android:color/transparent"
         app:navigationIcon="@android:drawable/ic_menu_revert" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDownloadSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Download PDF"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        app:cornerRadius="24dp"
+        app:icon="@android:drawable/stat_sys_download_done"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/surfaceColor"
+        app:tabIndicatorColor="@color/primaryColor"
+        app:tabIndicatorFullWidth="false"
+        app:tabRippleColor="@color/primaryLightColor"
+        app:tabTextColor="@color/textColorSecondary"
+        app:tabSelectedTextColor="@color/primaryColor">
         <com.google.android.material.tabs.TabItem android:text="Medicines" />
         <com.google.android.material.tabs.TabItem android:text="Symptoms" />
     </com.google.android.material.tabs.TabLayout>

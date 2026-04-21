@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.MedicineViewHolder> {
+    private static final int INTAKE_WINDOW_MINUTES = 5;
     private List<Medicine> medicines = new ArrayList<>();
     private List<com.example.myapplication.model.IntakeLog> intakeLogs = new ArrayList<>();
     private final OnMedicineActionListener listener;
@@ -89,7 +90,7 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
                         java.util.Calendar schedCal = java.util.Calendar.getInstance();
                         schedCal.setTime(date);
                         int schedTotal = schedCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + schedCal.get(java.util.Calendar.MINUTE);
-                        if (Math.abs(schedTotal - nowTotal) <= 60) return true;
+                        if (Math.abs(schedTotal - nowTotal) <= INTAKE_WINDOW_MINUTES) return true;
                     }
                 } catch (Exception ignored) {}
             }
@@ -112,8 +113,8 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
                     logCal.get(java.util.Calendar.DAY_OF_YEAR) == todayDay) {
                     
                     int logTotal = logCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + logCal.get(java.util.Calendar.MINUTE);
-                    // If log is within 60 mins of this specific schedule, it's taken
-                    if (Math.abs(logTotal - schedTotalMinutes) <= 60) {
+                    // If log is within the same intake window, it's taken for that schedule.
+                    if (Math.abs(logTotal - schedTotalMinutes) <= INTAKE_WINDOW_MINUTES) {
                         return true;
                     }
                 }
@@ -165,7 +166,7 @@ public class MedicineAdapter extends RecyclerView.Adapter<MedicineAdapter.Medici
 
                     int diff = schedTotal - nowTotal;
                     
-                    if (Math.abs(diff) <= 60) {
+                    if (Math.abs(diff) <= INTAKE_WINDOW_MINUTES) {
                         canTakeNow = true;
                         if (isAlreadyTaken(medicine.getId(), schedTotal)) {
                             alreadyTakenNow = true;

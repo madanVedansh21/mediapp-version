@@ -95,10 +95,30 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCountryCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:hint="Country Code"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
+                android:layout_marginBottom="16dp">
+                <AutoCompleteTextView
+                    android:id="@+id/actvCountryCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:importantForAutofill="no"
+                    android:hint="+91"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:hint="Emergency Contact"
+                android:hint="Emergency Contact Number"
                 app:boxCornerRadiusTopStart="16dp"
                 app:boxCornerRadiusTopEnd="16dp"
                 app:boxCornerRadiusBottomStart="16dp"
@@ -108,7 +128,8 @@
                     android:id="@+id/etEmergencyContact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="number"
+                    android:maxLength="14"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -142,7 +163,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:hint="Caretaker Phone"
+                android:hint="Caretaker Phone Number"
                 app:boxCornerRadiusTopStart="16dp"
                 app:boxCornerRadiusTopEnd="16dp"
                 app:boxCornerRadiusBottomStart="16dp"
@@ -152,7 +173,8 @@
                     android:id="@+id/etCaretakerPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="phone"/>
+                    android:inputType="number"
+                    android:maxLength="14"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout

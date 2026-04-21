@@ -2,6 +2,7 @@ package com.example.myapplication.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -13,6 +14,9 @@ import com.example.myapplication.util.ValidationUtils;
 public class RegisterActivity extends AppCompatActivity {
     private ActivityRegisterBinding binding;
     private MediBuddyViewModel viewModel;
+    private static final String[] COUNTRY_CODES = {
+            "+1", "+44", "+61", "+65", "+81", "+91", "+971"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +25,13 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(MediBuddyViewModel.class);
+        ArrayAdapter<String> countryCodeAdapter = new ArrayAdapter<>(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            COUNTRY_CODES
+        );
+        binding.actvCountryCode.setAdapter(countryCodeAdapter);
+        binding.actvCountryCode.setText("+91", false);
 
         binding.btnRegister.setOnClickListener(v -> {
             // 1. Sanitize inputs
@@ -31,6 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
             String caretakerName = ValidationUtils.sanitize(binding.etCaretakerName.getText().toString());
             String caretakerPhone = ValidationUtils.sanitize(binding.etCaretakerPhone.getText().toString());
             String caretakerEmail = ValidationUtils.sanitize(binding.etCaretakerEmail.getText().toString()).toLowerCase();
+            String countryCode = ValidationUtils.sanitize(binding.actvCountryCode.getText().toString());
+            if (countryCode.isEmpty()) {
+                countryCode = "+91";
+            }
 
             // 2. Comprehensive Validation
             if (!ValidationUtils.isValidName(name)) {
@@ -51,8 +66,9 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            if (!ValidationUtils.isValidPhone(emergencyContact)) {
-                binding.etEmergencyContact.setError("Enter a valid 10-digit phone number");
+            String normalizedEmergencyPhone = ValidationUtils.normalizePhoneWithCountryCode(countryCode, emergencyContact);
+            if (normalizedEmergencyPhone == null) {
+                binding.etEmergencyContact.setError("Enter a valid phone number (minimum 10 digits)");
                 binding.etEmergencyContact.requestFocus();
                 return;
             }
@@ -64,8 +80,12 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            if (!caretakerPhone.isEmpty() && !ValidationUtils.isValidPhone(caretakerPhone)) {
-                binding.etCaretakerPhone.setError("Enter a valid 10-digit phone number");
+            String normalizedCaretakerPhone = "";
+            if (!caretakerPhone.isEmpty()) {
+                normalizedCaretakerPhone = ValidationUtils.normalizePhoneWithCountryCode(countryCode, caretakerPhone);
+            }
+            if (!caretakerPhone.isEmpty() && normalizedCaretakerPhone == null) {
+                binding.etCaretakerPhone.setError("Enter a valid phone number (minimum 10 digits)");
                 binding.etCaretakerPhone.requestFocus();
                 return;
             }
@@ -77,7 +97,20 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             // 3. Data Integrity Enforcement (Backend-like creation)
-            User user = new User(name, email, password, emergencyContact, caretakerName, caretakerPhone, caretakerEmail, "City Hospital", "", "", "", "");
+                User user = new User(
+                    name,
+                    email,
+                    password,
+                    normalizedEmergencyPhone,
+                    caretakerName,
+                    normalizedCaretakerPhone == null ? "" : normalizedCaretakerPhone,
+                    caretakerEmail,
+                    "City Hospital",
+                    "",
+                    "",
+                    "",
+                    ""
+                );
             viewModel.register(user);
             
             Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();
