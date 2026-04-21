@@ -29,10 +29,20 @@ public class ValidationUtils {
         return name.trim().matches("^[a-zA-Z\\s]{3,30}$");
     }
 
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                    "\\@" +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                    "(" +
+                    "\\." +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                    ")+"
+    );
+
     public static boolean isValidEmail(String email) {
         if (email == null) return false;
         String trimmed = email.trim();
-        return !trimmed.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(trimmed).matches();
+        return !trimmed.isEmpty() && EMAIL_PATTERN.matcher(trimmed).matches();
     }
 
     public static boolean isValidPhone(String phone) {

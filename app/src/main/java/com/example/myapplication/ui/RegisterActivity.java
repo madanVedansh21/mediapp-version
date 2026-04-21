@@ -83,9 +83,11 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            String normalizedCaretakerPhone = "";
+            final String normalizedCaretakerPhone;
             if (!caretakerPhone.isEmpty()) {
                 normalizedCaretakerPhone = ValidationUtils.normalizePhoneWithCountryCode(countryCode, caretakerPhone);
+            } else {
+                normalizedCaretakerPhone = "";
             }
             if (!caretakerPhone.isEmpty() && normalizedCaretakerPhone == null) {
                 binding.etCaretakerPhone.setError("Enter exactly 10 digits");
