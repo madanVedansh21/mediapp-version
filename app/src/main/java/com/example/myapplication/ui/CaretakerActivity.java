@@ -69,6 +69,11 @@ public class CaretakerActivity extends AppCompatActivity {
                     countryCode = "+91";
                 }
 
+                String caretakerName = ValidationUtils.sanitize(binding.etCaretakerName.getText().toString());
+                String caretakerEmail = ValidationUtils.sanitize(binding.etCaretakerEmail.getText().toString()).toLowerCase();
+                String hospitalName = ValidationUtils.sanitize(binding.etHospitalName.getText().toString());
+                String doctorName = ValidationUtils.sanitize(binding.etDoctorName.getText().toString());
+
                 String caretakerPhone = ValidationUtils.sanitize(binding.etCaretakerPhone.getText().toString());
                 String hospitalPhone = ValidationUtils.sanitize(binding.etHospitalPhone.getText().toString());
                 String doctorPhone = ValidationUtils.sanitize(binding.etDoctorPhone.getText().toString());
@@ -95,17 +100,29 @@ public class CaretakerActivity extends AppCompatActivity {
                     return;
                 }
 
+                if (!caretakerName.isEmpty() && !ValidationUtils.isValidName(caretakerName)) {
+                    binding.etCaretakerName.setError("Name must be 3-20 alphabetic characters");
+                    binding.etCaretakerName.requestFocus();
+                    return;
+                }
+
+                if (!caretakerEmail.isEmpty() && !ValidationUtils.isValidEmail(caretakerEmail)) {
+                    binding.etCaretakerEmail.setError("Enter a valid email address");
+                    binding.etCaretakerEmail.requestFocus();
+                    return;
+                }
+
                 User updatedUser = new User(
                         currentUser.getName(),
                         currentUser.getEmail(),
                         currentUser.getPassword(),
                         currentUser.getEmergencyContact(),
-                        binding.etCaretakerName.getText().toString(),
+                        caretakerName,
                         normalizedCaretakerPhone,
-                        binding.etCaretakerEmail.getText().toString(),
-                        binding.etHospitalName.getText().toString(),
+                        caretakerEmail,
+                        hospitalName,
                         normalizedHospitalPhone,
-                        binding.etDoctorName.getText().toString(),
+                        doctorName,
                         normalizedDoctorPhone,
                         currentUser.getDoctorEmail() // Preserving old or add field if needed
                 );

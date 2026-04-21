@@ -6,6 +6,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import com.example.myapplication.data.AppDatabase;
 import com.example.myapplication.databinding.ActivityRegisterBinding;
 import com.example.myapplication.model.User;
 
@@ -96,26 +97,40 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            // 3. Data Integrity Enforcement (Backend-like creation)
-                User user = new User(
-                    name,
-                    email,
-                    password,
-                    normalizedEmergencyPhone,
-                    caretakerName,
-                    normalizedCaretakerPhone == null ? "" : normalizedCaretakerPhone,
-                    caretakerEmail,
-                    "City Hospital",
-                    "",
-                    "",
-                    "",
-                    ""
-                );
-            viewModel.register(user);
-            
-            Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, DashboardActivity.class));
-            finish();
+            binding.btnRegister.setEnabled(false);
+            new Thread(() -> {
+                User existingUser = AppDatabase.getDatabase(this).userDao().getUserByEmail(email);
+                runOnUiThread(() -> {
+                    if (existingUser != null) {
+                        binding.btnRegister.setEnabled(true);
+                        binding.etEmail.setError("This email is already registered. Please login.");
+                        binding.etEmail.requestFocus();
+                        Toast.makeText(this, "Account already exists for this email", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // 3. Data Integrity Enforcement (Backend-like creation)
+                    User user = new User(
+                            name,
+                            email,
+                            password,
+                            normalizedEmergencyPhone,
+                            caretakerName,
+                            normalizedCaretakerPhone == null ? "" : normalizedCaretakerPhone,
+                            caretakerEmail,
+                            "City Hospital",
+                            "",
+                            "",
+                            "",
+                            ""
+                    );
+                    viewModel.register(user);
+
+                    Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, DashboardActivity.class));
+                    finish();
+                });
+            }).start();
         });
     }
 }
