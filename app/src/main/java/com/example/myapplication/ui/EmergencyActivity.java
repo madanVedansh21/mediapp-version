@@ -23,7 +23,7 @@ public class EmergencyActivity extends AppCompatActivity {
     private MediBuddyViewModel viewModel;
     private CountDownTimer timer;
     private boolean isCancelled = false;
-    private String caretakerPhone = "+1555010999"; // Fallback
+    private String caretakerPhone = "+918735047450"; // Fallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class EmergencyActivity extends AppCompatActivity {
             sendSmsToCaretaker();
         }
 
-        MockApiService.sendEmergencyAlert("123 Health St, Metro City", "Aspirin, Lisinopril", new MockApiService.ApiCallback() {
+        MockApiService.sendEmergencyAlert("Location: near IIIT Nagpur , Nagpur Rural", "Aspirin, Lisinopril", new MockApiService.ApiCallback() {
             @Override
             public void onSuccess(String response) {
                 // Also simulate sending to caretaker
@@ -113,7 +113,7 @@ public class EmergencyActivity extends AppCompatActivity {
     private void performSmsSend() {
         try {
             SmsManager smsManager = SmsManager.getDefault();
-            String message = "EMERGENCY! MediBuddy user needs help. Location: 123 Health St, Metro City.";
+            String message = "EMERGENCY! MediBuddy user needs help. Location: near IIIT Nagpur , Nagpur Rural ";
             smsManager.sendTextMessage(caretakerPhone, null, message, null, null);
             Toast.makeText(EmergencyActivity.this, "Emergency SMS Sent to " + caretakerPhone, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {

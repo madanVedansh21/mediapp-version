@@ -68,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             String normalizedEmergencyPhone = ValidationUtils.normalizePhoneWithCountryCode(countryCode, emergencyContact);
             if (normalizedEmergencyPhone == null) {
-                binding.etEmergencyContact.setError("Enter a valid phone number (minimum 10 digits)");
+                binding.etEmergencyContact.setError("Enter exactly 10 digits");
                 binding.etEmergencyContact.requestFocus();
                 return;
             }
@@ -85,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
                 normalizedCaretakerPhone = ValidationUtils.normalizePhoneWithCountryCode(countryCode, caretakerPhone);
             }
             if (!caretakerPhone.isEmpty() && normalizedCaretakerPhone == null) {
-                binding.etCaretakerPhone.setError("Enter a valid phone number (minimum 10 digits)");
+                binding.etCaretakerPhone.setError("Enter exactly 10 digits");
                 binding.etCaretakerPhone.requestFocus();
                 return;
             }

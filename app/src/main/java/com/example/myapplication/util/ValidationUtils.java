@@ -49,11 +49,16 @@ public class ValidationUtils {
         }
 
         String digits = phone.replaceAll("[^0-9]", "");
-        if (digits.length() < 10 || digits.length() > 14) {
+        // Keep local number strict to 10 digits while still storing with country code.
+        if (digits.length() != 10) {
             return null;
         }
 
         String normalized = cleanCountry + digits;
+        int normalizedDigits = normalized.replaceAll("[^0-9]", "").length();
+        if (normalizedDigits < 10 || normalizedDigits > 15) {
+            return null;
+        }
         return E164_PATTERN.matcher(normalized).matches() ? normalized : null;
     }
 
@@ -62,10 +67,16 @@ public class ValidationUtils {
 
         String trimmed = fullPhone.trim();
         if (!trimmed.startsWith("+")) {
-            return new String[]{"+91", trimmed.replaceAll("[^0-9]", "")};
+            String digits = trimmed.replaceAll("[^0-9]", "");
+            return new String[]{"+91", digits.length() <= 10 ? digits : digits.substring(digits.length() - 10)};
         }
 
         String digitsOnly = trimmed.replaceAll("[^0-9+]", "");
+        String fallbackDigits = digitsOnly.replaceAll("[^0-9]", "");
+        String fallbackNumber = fallbackDigits.length() <= 10
+                ? fallbackDigits
+                : fallbackDigits.substring(fallbackDigits.length() - 10);
+
         for (int ccLength = 3; ccLength >= 1; ccLength--) {
             int splitIndex = 1 + ccLength;
             if (digitsOnly.length() <= splitIndex) continue;
@@ -73,11 +84,14 @@ public class ValidationUtils {
             String candidateCode = digitsOnly.substring(0, splitIndex);
             String candidateNumber = digitsOnly.substring(splitIndex).replaceAll("[^0-9]", "");
             if (COUNTRY_CODE_PATTERN.matcher(candidateCode).matches() && candidateNumber.length() >= 10) {
-                return new String[]{candidateCode, candidateNumber};
+                String local = candidateNumber.length() <= 10
+                        ? candidateNumber
+                        : candidateNumber.substring(candidateNumber.length() - 10);
+                return new String[]{candidateCode, local};
             }
         }
 
-        return new String[]{"+91", digitsOnly.replaceAll("[^0-9]", "")};
+        return new String[]{"+91", fallbackNumber};
     }
 
     public static boolean isValidPassword(String password) {

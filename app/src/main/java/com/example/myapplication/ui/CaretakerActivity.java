@@ -78,19 +78,19 @@ public class CaretakerActivity extends AppCompatActivity {
                 String normalizedDoctorPhone = doctorPhone.isEmpty() ? "" : ValidationUtils.normalizePhoneWithCountryCode(countryCode, doctorPhone);
 
                 if (!caretakerPhone.isEmpty() && normalizedCaretakerPhone == null) {
-                    binding.etCaretakerPhone.setError("Use at least 10 digits");
+                    binding.etCaretakerPhone.setError("Enter exactly 10 digits");
                     binding.etCaretakerPhone.requestFocus();
                     return;
                 }
 
                 if (!hospitalPhone.isEmpty() && normalizedHospitalPhone == null) {
-                    binding.etHospitalPhone.setError("Hospital phone must be at least 10 digits");
+                    binding.etHospitalPhone.setError("Hospital phone must be exactly 10 digits");
                     binding.etHospitalPhone.requestFocus();
                     return;
                 }
 
                 if (!doctorPhone.isEmpty() && normalizedDoctorPhone == null) {
-                    binding.etDoctorPhone.setError("Use at least 10 digits");
+                    binding.etDoctorPhone.setError("Enter exactly 10 digits");
                     binding.etDoctorPhone.requestFocus();
                     return;
                 }

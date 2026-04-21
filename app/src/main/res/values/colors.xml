@@ -3,20 +3,20 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Premium Medical Palette -->
-    <color name="primaryColor">#0D47A1</color>
-    <color name="primaryLightColor">#5472d3</color>
-    <color name="primaryDarkColor">#002171</color>
-    <color name="secondaryColor">#26A69A</color>
-    <color name="secondaryLightColor">#64d8cb</color>
-    <color name="secondaryDarkColor">#00796b</color>
+    <!-- Refined medical palette: deep blue + fresh aqua -->
+    <color name="primaryColor">#165D8F</color>
+    <color name="primaryLightColor">#5FA8D3</color>
+    <color name="primaryDarkColor">#0B3A60</color>
+    <color name="secondaryColor">#1FA8A2</color>
+    <color name="secondaryLightColor">#8CE3DD</color>
+    <color name="secondaryDarkColor">#12736F</color>
 
-    <color name="backgroundColor">#F8F9FD</color>
+    <color name="backgroundColor">#F4F8FD</color>
     <color name="surfaceColor">#FFFFFF</color>
-    <color name="textColorPrimary">#1A237E</color>
-    <color name="textColorSecondary">#757575</color>
+    <color name="textColorPrimary">#12344D</color>
+    <color name="textColorSecondary">#5E7386</color>
 
-    <color name="glow_blue">#400D47A1</color>
-    <color name="accent_red">#FF5252</color>
-    <color name="accent_green">#66BB6A</color>
+    <color name="glow_blue">#40165D8F</color>
+    <color name="accent_red">#D84E4E</color>
+    <color name="accent_green">#31A66A</color>
 </resources>
