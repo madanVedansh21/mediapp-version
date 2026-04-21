@@ -1,20 +1,17 @@
 package com.example.myapplication.ui;
 
 import android.os.Bundle;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.myapplication.databinding.ActivityAddMedicineBinding;
 import com.example.myapplication.model.Medicine;
-import com.example.myapplication.receiver.MedicineAlarmReceiver;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import android.Manifest;
+import com.example.myapplication.util.AlarmUtils;
+import com.example.myapplication.util.ValidationUtils;
 import android.os.Build;
 import java.util.Calendar;
 import java.util.Date;
@@ -68,6 +65,11 @@ public class AddMedicineActivity extends AppCompatActivity {
                 return;
             }
 
+            if (!ValidationUtils.isValidMedicineName(name)) {
+                Toast.makeText(this, "Medicine name must be 3-20 alphabetic characters", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             int frequency = Integer.parseInt(frequencyStr);
             int stock = Integer.parseInt(stockStr);
             int threshold = Integer.parseInt(thresholdStr);
@@ -78,7 +80,7 @@ public class AddMedicineActivity extends AppCompatActivity {
                     30, false, stock, threshold);
             
             viewModel.addMedicine(medicine);
-            scheduleNotifications(medicine);
+            AlarmUtils.scheduleNotifications(this, medicine);
             Toast.makeText(this, "Medicine Added & Reminders Set", Toast.LENGTH_SHORT).show();
             finish();
         });
@@ -88,55 +90,6 @@ public class AddMedicineActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_CODE);
-            }
-        }
-    }
-
-    private void scheduleNotifications(Medicine medicine) {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        String[] times = medicine.getIntakeTimes().split(",");
-        String[] formats = {"hh:mm a", "h:mm a", "hh:mm aa", "h:mm aa", "HH:mm", "H:mm"};
-
-        for (int i = 0; i < times.length; i++) {
-            String timeStr = times[i].trim();
-            Date date = null;
-            for (String format : formats) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
-                    date = sdf.parse(timeStr);
-                    if (date != null) break;
-                } catch (Exception ignored) {}
-            }
-
-            if (date != null) {
-                Calendar schedCal = Calendar.getInstance();
-                Calendar now = Calendar.getInstance();
-                
-                Calendar timeCal = Calendar.getInstance();
-                timeCal.setTime(date);
-                
-                schedCal.set(Calendar.HOUR_OF_DAY, timeCal.get(Calendar.HOUR_OF_DAY));
-                schedCal.set(Calendar.MINUTE, timeCal.get(Calendar.MINUTE));
-                schedCal.set(Calendar.SECOND, 0);
-
-                if (schedCal.before(now)) {
-                    schedCal.add(Calendar.DAY_OF_YEAR, 1);
-                }
-
-                Intent intent = new Intent(this, MedicineAlarmReceiver.class);
-                intent.putExtra("medicine_name", medicine.getName());
-                intent.putExtra("medicine_id", medicine.getId());
-                
-                // Use a unique request code for each dose
-                int requestCode = (medicine.getName().hashCode() + i);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                        this, requestCode, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, schedCal.getTimeInMillis(), pendingIntent);
-                } else {
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, schedCal.getTimeInMillis(), pendingIntent);
-                }
             }
         }
     }

@@ -208,9 +208,10 @@
                             android:textStyle="bold"
                             android:textColor="@color/secondaryColor"/>
                         <TextView
+                            android:id="@+id/tvCaretakerLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Caretakers"
+                            android:text="Missed Today"
                             android:textSize="12sp"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

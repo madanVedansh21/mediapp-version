@@ -20,10 +20,20 @@ public class SymptomLogActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(MediBuddyViewModel.class);
 
+        viewModel.getEmergencyTriggered().observe(this, triggered -> {
+            if (triggered) {
+                android.content.Intent intent = new android.content.Intent(this, EmergencyActivity.class);
+                startActivity(intent);
+                viewModel.resetEmergencyTrigger();
+                finish();
+            }
+        });
+
         binding.btnLogSymptom.setOnClickListener(v -> {
             String category = binding.etSymptomCategory.getText().toString();
             int severity = binding.sbSeverity.getProgress();
             String notes = binding.etSymptomNotes.getText().toString();
+
 
             if (category.isEmpty()) {
                 Toast.makeText(this, "Please enter a category", Toast.LENGTH_SHORT).show();

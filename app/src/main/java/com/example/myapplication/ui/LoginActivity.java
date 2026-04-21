@@ -8,6 +8,8 @@ import com.example.myapplication.data.AppDatabase;
 import com.example.myapplication.databinding.ActivityLoginBinding;
 import com.example.myapplication.model.User;
 
+import com.example.myapplication.util.ValidationUtils;
+
 public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
 
@@ -18,11 +20,18 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         binding.btnLogin.setOnClickListener(v -> {
-            String email = binding.etEmail.getText().toString();
-            String password = binding.etPassword.getText().toString();
+            String email = ValidationUtils.sanitize(binding.etEmail.getText().toString()).toLowerCase();
+            String password = ValidationUtils.sanitize(binding.etPassword.getText().toString());
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+            if (!ValidationUtils.isValidEmail(email)) {
+                binding.etEmail.setError("Enter a valid email address");
+                binding.etEmail.requestFocus();
+                return;
+            }
+
+            if (password.isEmpty()) {
+                binding.etPassword.setError("Password cannot be empty");
+                binding.etPassword.requestFocus();
                 return;
             }
 

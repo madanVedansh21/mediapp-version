@@ -25,6 +25,9 @@ public interface MedicineDao {
     @Query("SELECT * FROM medicines")
     LiveData<List<Medicine>> getAllMedicines();
 
+    @Query("SELECT * FROM medicines")
+    List<Medicine> getAllMedicinesSync();
+
     @Query("SELECT * FROM medicines WHERE stock <= threshold")
     LiveData<List<Medicine>> getLowStockMedicines();
 }

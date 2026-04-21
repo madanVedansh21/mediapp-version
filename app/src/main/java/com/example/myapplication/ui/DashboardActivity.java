@@ -66,6 +66,15 @@ public class DashboardActivity extends AppCompatActivity {
 
         setupProgressTracker();
         setupAnalytics();
+        setupMissedDosesStats();
+
+        viewModel.getEmergencyTriggered().observe(this, triggered -> {
+            if (triggered) {
+                Intent intent = new Intent(this, EmergencyActivity.class);
+                startActivity(intent);
+                viewModel.resetEmergencyTrigger();
+            }
+        });
 
         viewModel.getAllMedicines().observe(this, medicines -> {
             if (medicines != null) {
@@ -117,40 +126,76 @@ public class DashboardActivity extends AppCompatActivity {
         viewModel.getAllIntakeLogs().observe(this, logs -> {
             if (logs == null) return;
 
-            ArrayList<BarEntry> entries = new ArrayList<>();
+            ArrayList<BarEntry> takenEntries = new ArrayList<>();
+            ArrayList<BarEntry> missedEntries = new ArrayList<>();
             String[] days = new String[]{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-            int[] counts = new int[7];
+            int[] takenCounts = new int[7];
+            int[] missedCounts = new int[7];
 
             Calendar cal = Calendar.getInstance();
             for (IntakeLog log : logs) {
                 cal.setTimeInMillis(log.getTimestamp());
                 int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
                 int index = (dayOfWeek + 5) % 7;
-                counts[index]++;
+                if ("Taken".equalsIgnoreCase(log.getStatus())) {
+                    takenCounts[index]++;
+                } else if ("Missed".equalsIgnoreCase(log.getStatus())) {
+                    missedCounts[index]++;
+                }
             }
 
             for (int i = 0; i < 7; i++) {
-                entries.add(new BarEntry(i, counts[i]));
+                takenEntries.add(new BarEntry(i, takenCounts[i]));
+                missedEntries.add(new BarEntry(i, missedCounts[i]));
             }
 
-            BarDataSet dataSet = new BarDataSet(entries, "Doses Taken");
-            dataSet.setColor(Color.parseColor("#1A56BE"));
-            dataSet.setValueTextColor(Color.BLACK);
-            dataSet.setValueTextSize(10f);
+            BarDataSet takenSet = new BarDataSet(takenEntries, "Taken");
+            takenSet.setColor(Color.parseColor("#1A56BE"));
+            takenSet.setValueTextColor(Color.BLACK);
 
-            BarData barData = new BarData(dataSet);
+            BarDataSet missedSet = new BarDataSet(missedEntries, "Missed");
+            missedSet.setColor(Color.parseColor("#FF5252"));
+            missedSet.setValueTextColor(Color.BLACK);
+
+            BarData barData = new BarData(takenSet, missedSet);
+            float groupSpace = 0.06f;
+            float barSpace = 0.02f;
+            float barWidth = 0.45f;
+            barData.setBarWidth(barWidth);
+
             binding.barChart.setData(barData);
+            binding.barChart.groupBars(0, groupSpace, barSpace);
             
             XAxis xAxis = binding.barChart.getXAxis();
             xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);
+            xAxis.setCenterAxisLabels(true);
+            xAxis.setGranularity(1f);
+            xAxis.setAxisMinimum(0);
+            xAxis.setAxisMaximum(7);
             
             binding.barChart.getAxisLeft().setAxisMinimum(0f);
             binding.barChart.getAxisRight().setEnabled(false);
             binding.barChart.getDescription().setEnabled(false);
             binding.barChart.animateY(1000);
             binding.barChart.invalidate();
+        });
+    }
+
+    private void setupMissedDosesStats() {
+        viewModel.getAllIntakeLogs().observe(this, logs -> {
+            int missedToday = 0;
+            long startOfToday = getStartOfDay(0);
+            if (logs != null) {
+                for (IntakeLog log : logs) {
+                    if (log.getTimestamp() >= startOfToday && "Missed".equalsIgnoreCase(log.getStatus())) {
+                        missedToday++;
+                    }
+                }
+            }
+            binding.tvCaretakerCount.setText(String.valueOf(missedToday));
+            binding.tvCaretakerLabel.setText("Missed Today");
         });
     }
 

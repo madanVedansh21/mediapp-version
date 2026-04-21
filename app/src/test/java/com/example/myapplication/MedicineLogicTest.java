@@ -54,6 +54,27 @@ public class MedicineLogicTest {
     }
 
     @Test
+    public void testEmailValidation() {
+        assertTrue("Valid email should pass", com.example.myapplication.util.ValidationUtils.isValidEmail("test@example.com"));
+        assertFalse("Missing @ should fail", com.example.myapplication.util.ValidationUtils.isValidEmail("testexample.com"));
+        assertFalse("Missing domain should fail", com.example.myapplication.util.ValidationUtils.isValidEmail("test@"));
+    }
+
+    @Test
+    public void testPhoneValidation() {
+        assertTrue("10 digits should pass", com.example.myapplication.util.ValidationUtils.isValidPhone("1234567890"));
+        assertFalse("9 digits should fail", com.example.myapplication.util.ValidationUtils.isValidPhone("123456789"));
+        assertFalse("Letters should fail", com.example.myapplication.util.ValidationUtils.isValidPhone("12345abcde"));
+    }
+
+    @Test
+    public void testNameValidation() {
+        assertTrue("Normal name should pass", com.example.myapplication.util.ValidationUtils.isValidName("John"));
+        assertFalse("Short name should fail", com.example.myapplication.util.ValidationUtils.isValidName("Jo"));
+        assertFalse("Numbers in name should fail", com.example.myapplication.util.ValidationUtils.isValidName("John123"));
+    }
+
+    @Test
     public void testTimeFormatting() {
         String inputTime = "02:00 PM";
         try {

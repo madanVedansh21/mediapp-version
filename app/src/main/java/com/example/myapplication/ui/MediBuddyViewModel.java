@@ -1,9 +1,11 @@
 package com.example.myapplication.ui;
 
 import android.app.Application;
+import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import com.example.myapplication.data.MediBuddyRepository;
 import com.example.myapplication.model.IntakeLog;
 import com.example.myapplication.model.Medicine;
@@ -15,10 +17,19 @@ import java.util.List;
 
 public class MediBuddyViewModel extends AndroidViewModel {
     private final MediBuddyRepository repository;
+    private final MutableLiveData<Boolean> emergencyTriggered = new MutableLiveData<>(false);
 
     public MediBuddyViewModel(@NonNull Application application) {
         super(application);
         repository = new MediBuddyRepository(application);
+    }
+
+    public LiveData<Boolean> getEmergencyTriggered() {
+        return emergencyTriggered;
+    }
+
+    public void resetEmergencyTrigger() {
+        emergencyTriggered.postValue(false);
     }
 
     // User
@@ -50,8 +61,7 @@ public class MediBuddyViewModel extends AndroidViewModel {
                 if (s.getSeverity() >= 7) highSeverityCount++;
             }
             if (highSeverityCount >= 3) {
-                // Trigger critical alert logic - normally via LiveData or EventBus
-                // For now, we simulate detection
+                emergencyTriggered.postValue(true);
             }
         }).start();
     }
