@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class DashboardActivity extends AppCompatActivity {
+    private static final String PREFS_NAME = "medibuddy_prefs";
+    private static final String KEY_LOGGED_IN_EMAIL = "logged_in_email";
     private ActivityDashboardBinding binding;
     private MediBuddyViewModel viewModel;
     private ActivityResultLauncher<String> pdfExportLauncher;
@@ -53,15 +55,28 @@ public class DashboardActivity extends AppCompatActivity {
             this::writePdfToUri
         );
 
-        viewModel.getUser().observe(this, user -> {
+        String loggedInEmail = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getString(KEY_LOGGED_IN_EMAIL, "");
+
+        if (loggedInEmail == null || loggedInEmail.isEmpty()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        viewModel.getUserByEmail(loggedInEmail).observe(this, user -> {
             if (user != null) {
-            currentUser = user;
+                currentUser = user;
                 binding.tvUserName.setText(user.getName());
                 binding.tvCaretakerCount.setText(user.getCaretakerName() != null && !user.getCaretakerName().isEmpty() ? "1" : "0");
             }
         });
 
         binding.btnLogout.setOnClickListener(v -> {
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .edit()
+                    .remove(KEY_LOGGED_IN_EMAIL)
+                    .apply();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
@@ -170,6 +185,14 @@ public class DashboardActivity extends AppCompatActivity {
         bodyPaint.setColor(0xFF202124);
         bodyPaint.setTextSize(11f);
 
+        Paint cardPaint = new Paint();
+        cardPaint.setColor(0xFFEFF6FD);
+
+        Paint borderPaint = new Paint();
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStrokeWidth(1.5f);
+        borderPaint.setColor(0xFFD5E5F5);
+
         PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
         PdfDocument.Page page = document.startPage(pageInfo);
         Canvas canvas = page.getCanvas();
@@ -178,6 +201,8 @@ public class DashboardActivity extends AppCompatActivity {
         int y = 48;
         int line = 18;
 
+        canvas.drawRoundRect(30, 24, 565, 90, 16, 16, cardPaint);
+        canvas.drawRoundRect(30, 24, 565, 90, 16, 16, borderPaint);
         canvas.drawText("MediBuddy Home Summary", margin, y, titlePaint);
         y += line + 6;
         canvas.drawText("Generated: " + new SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(new Date()), margin, y, bodyPaint);
@@ -232,6 +257,38 @@ public class DashboardActivity extends AppCompatActivity {
                 canvas.drawText("- " + log.getCategory() + " | Severity " + log.getSeverity(), margin, y, bodyPaint);
                 y += line;
                 if (y > 780) break;
+            }
+        }
+
+        List<Medicine> medicinesWithPrescription = new ArrayList<>();
+        for (Medicine medicine : medicinesCache) {
+            if (medicine.getPrescriptionImageUri() != null && !medicine.getPrescriptionImageUri().trim().isEmpty()) {
+                medicinesWithPrescription.add(medicine);
+            }
+        }
+
+        if (!medicinesWithPrescription.isEmpty() && y < 700) {
+            y += line;
+            canvas.drawText("Doctor Prescriptions", margin, y, sectionPaint);
+            y += line;
+
+            int shown = 0;
+            for (Medicine medicine : medicinesWithPrescription) {
+                if (shown >= 2 || y > 720) break;
+                try {
+                    Uri imageUri = Uri.parse(medicine.getPrescriptionImageUri());
+                    java.io.InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                    if (inputStream == null) continue;
+                    android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(inputStream);
+                    inputStream.close();
+                    if (bitmap == null) continue;
+
+                    android.graphics.Rect dest = new android.graphics.Rect(margin, y, margin + 220, y + 120);
+                    canvas.drawBitmap(bitmap, null, dest, null);
+                    canvas.drawText(medicine.getName(), margin + 230, y + 18, bodyPaint);
+                    y += 130;
+                    shown++;
+                } catch (Exception ignored) {}
             }
         }
 

@@ -149,6 +149,36 @@
                             android:text="08:00"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Doctor Prescription"
+                        android:textStyle="bold"
+                        android:textColor="@color/textColorPrimary"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPickPrescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Add Prescription Image"
+                        android:textAllCaps="false"
+                        app:cornerRadius="14dp"
+                        app:icon="@android:drawable/ic_menu_gallery"
+                        app:iconGravity="textStart"
+                        app:iconPadding="8dp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <ImageView
+                        android:id="@+id/ivPrescriptionPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:background="#12000000"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Prescription image preview"
+                        android:visibility="gone"
+                        android:layout_marginBottom="16dp"/>
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSaveMedicine"
                         android:layout_width="match_parent"

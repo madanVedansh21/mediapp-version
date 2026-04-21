@@ -36,6 +36,7 @@ public class MediBuddyViewModel extends AndroidViewModel {
     public void register(User user) { repository.register(user); }
     public void updateUser(User user) { repository.updateUser(user); }
     public LiveData<User> getUser() { return repository.getUser(); }
+    public LiveData<User> getUserByEmail(String email) { return repository.getUserByEmail(email); }
 
     // Medicine
     public void addMedicine(Medicine medicine) { repository.insertMedicine(medicine); }

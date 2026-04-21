@@ -13,6 +13,8 @@ import com.example.myapplication.model.User;
 import com.example.myapplication.util.ValidationUtils;
 
 public class RegisterActivity extends AppCompatActivity {
+    private static final String PREFS_NAME = "medibuddy_prefs";
+    private static final String KEY_LOGGED_IN_EMAIL = "logged_in_email";
     private ActivityRegisterBinding binding;
     private MediBuddyViewModel viewModel;
     private static final String[] COUNTRY_CODES = {
@@ -125,6 +127,11 @@ public class RegisterActivity extends AppCompatActivity {
                             ""
                     );
                     viewModel.register(user);
+
+                        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                            .edit()
+                            .putString(KEY_LOGGED_IN_EMAIL, user.getEmail())
+                            .apply();
 
                     Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(this, DashboardActivity.class));

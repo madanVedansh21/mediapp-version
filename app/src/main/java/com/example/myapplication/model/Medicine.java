@@ -18,6 +18,8 @@ public class Medicine {
     private int stock;
     private int threshold;
     private String status; // Normal, Pending Reorder
+    private String ownerEmail;
+    private String prescriptionImageUri;
 
     public Medicine(String name, String type, String dosage, int frequency, String intakeTimes, 
                     String startDate, int durationDays, boolean isLifetime, int stock, int threshold) {
@@ -32,6 +34,8 @@ public class Medicine {
         this.stock = stock;
         this.threshold = threshold;
         this.status = "Normal";
+        this.ownerEmail = "";
+        this.prescriptionImageUri = "";
     }
 
     // Getters and Setters
@@ -50,4 +54,8 @@ public class Medicine {
     public int getThreshold() { return threshold; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getOwnerEmail() { return ownerEmail; }
+    public void setOwnerEmail(String ownerEmail) { this.ownerEmail = ownerEmail; }
+    public String getPrescriptionImageUri() { return prescriptionImageUri; }
+    public void setPrescriptionImageUri(String prescriptionImageUri) { this.prescriptionImageUri = prescriptionImageUri; }
 }

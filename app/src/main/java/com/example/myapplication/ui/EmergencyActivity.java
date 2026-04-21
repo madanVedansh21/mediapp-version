@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityEmergencyBinding;
 import com.example.myapplication.service.MockApiService;
@@ -19,6 +20,8 @@ import androidx.lifecycle.Observer;
 
 public class EmergencyActivity extends AppCompatActivity {
     private static final int SMS_PERMISSION_CODE = 101;
+    private static final String PREFS_NAME = "medibuddy_prefs";
+    private static final String KEY_LOGGED_IN_EMAIL = "logged_in_email";
     private ActivityEmergencyBinding binding;
     private MediBuddyViewModel viewModel;
     private CountDownTimer timer;
@@ -98,14 +101,21 @@ public class EmergencyActivity extends AppCompatActivity {
     }
 
     private void sendSmsToCaretaker() {
-        viewModel.getUser().observe(this, new Observer<User>() {
+        String loggedInEmail = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getString(KEY_LOGGED_IN_EMAIL, "");
+
+        LiveData<User> userLiveData = (loggedInEmail == null || loggedInEmail.isEmpty())
+                ? viewModel.getUser()
+                : viewModel.getUserByEmail(loggedInEmail);
+
+        userLiveData.observe(this, new Observer<User>() {
             @Override
             public void onChanged(User user) {
                 if (user != null && user.getCaretakerPhone() != null && !user.getCaretakerPhone().isEmpty()) {
                     caretakerPhone = user.getCaretakerPhone();
                 }
                 performSmsSend();
-                viewModel.getUser().removeObserver(this);
+                userLiveData.removeObserver(this);
             }
         });
     }

@@ -11,6 +11,8 @@ import com.example.myapplication.model.User;
 import com.example.myapplication.util.ValidationUtils;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String PREFS_NAME = "medibuddy_prefs";
+    private static final String KEY_LOGGED_IN_EMAIL = "logged_in_email";
     private ActivityLoginBinding binding;
 
     @Override
@@ -40,6 +42,10 @@ public class LoginActivity extends AppCompatActivity {
                 User user = AppDatabase.getDatabase(this).userDao().login(email, password);
                 runOnUiThread(() -> {
                     if (user != null) {
+                        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                                .edit()
+                                .putString(KEY_LOGGED_IN_EMAIL, user.getEmail())
+                                .apply();
                         Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(this, DashboardActivity.class));
                         finish();

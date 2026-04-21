@@ -25,9 +25,18 @@ public interface MedicineDao {
     @Query("SELECT * FROM medicines")
     LiveData<List<Medicine>> getAllMedicines();
 
+    @Query("SELECT * FROM medicines WHERE ownerEmail = :ownerEmail")
+    LiveData<List<Medicine>> getAllMedicinesByOwner(String ownerEmail);
+
     @Query("SELECT * FROM medicines")
     List<Medicine> getAllMedicinesSync();
 
+    @Query("SELECT * FROM medicines WHERE ownerEmail = :ownerEmail")
+    List<Medicine> getAllMedicinesSyncByOwner(String ownerEmail);
+
     @Query("SELECT * FROM medicines WHERE stock <= threshold")
     LiveData<List<Medicine>> getLowStockMedicines();
+
+    @Query("SELECT * FROM medicines WHERE stock <= threshold AND ownerEmail = :ownerEmail")
+    LiveData<List<Medicine>> getLowStockMedicinesByOwner(String ownerEmail);
 }

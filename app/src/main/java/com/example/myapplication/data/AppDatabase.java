@@ -10,7 +10,7 @@ import com.example.myapplication.model.Medicine;
 import com.example.myapplication.model.SymptomLog;
 import com.example.myapplication.model.User;
 
-@Database(entities = {User.class, Medicine.class, IntakeLog.class, SymptomLog.class}, version = 3)
+@Database(entities = {User.class, Medicine.class, IntakeLog.class, SymptomLog.class}, version = 4)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 

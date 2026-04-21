@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityLogHistoryBinding;
 import com.example.myapplication.model.IntakeLog;
+import com.example.myapplication.model.Medicine;
 import com.example.myapplication.model.SymptomLog;
 import com.google.android.material.tabs.TabLayout;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,7 @@ public class LogHistoryActivity extends AppCompatActivity {
     private MediBuddyViewModel viewModel;
     private LogAdapter adapter;
     private List<IntakeLog> intakeLogsCache = new ArrayList<>();
+    private List<Medicine> medicinesCache = new ArrayList<>();
     private List<SymptomLog> symptomLogsCache = new ArrayList<>();
     private int selectedTab = 0;
     private ActivityResultLauncher<String> pdfExportLauncher;
@@ -71,6 +73,10 @@ public class LogHistoryActivity extends AppCompatActivity {
         viewModel.getAllIntakeLogs().observe(this, logs -> {
             intakeLogsCache = logs != null ? logs : new ArrayList<>();
             renderCurrentTab();
+        });
+
+        viewModel.getAllMedicines().observe(this, medicines -> {
+            medicinesCache = medicines != null ? medicines : new ArrayList<>();
         });
 
         viewModel.getAllSymptomLogs().observe(this, logs -> {
@@ -140,6 +146,14 @@ public class LogHistoryActivity extends AppCompatActivity {
         bodyPaint.setColor(0xFF222222);
         bodyPaint.setTextSize(11f);
 
+        Paint cardPaint = new Paint();
+        cardPaint.setColor(0xFFEFF6FD);
+
+        Paint borderPaint = new Paint();
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStrokeWidth(1.5f);
+        borderPaint.setColor(0xFFD5E5F5);
+
         int pageNumber = 1;
         PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, pageNumber).create();
         PdfDocument.Page page = document.startPage(pageInfo);
@@ -150,6 +164,8 @@ public class LogHistoryActivity extends AppCompatActivity {
         int lineHeight = 18;
         int maxY = 800;
 
+        canvas.drawRoundRect(30, 24, 565, 90, 16, 16, cardPaint);
+        canvas.drawRoundRect(30, 24, 565, 90, 16, 16, borderPaint);
         canvas.drawText("MediBuddy Health Summary", marginLeft, y, titlePaint);
         y += lineHeight + 6;
         canvas.drawText("Generated: " + new SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(new Date()), marginLeft, y, bodyPaint);
@@ -233,6 +249,55 @@ public class LogHistoryActivity extends AppCompatActivity {
                 String notesLine = "  Notes: " + log.getNotes().trim();
                 canvas.drawText(notesLine, marginLeft, y, bodyPaint);
                 y += lineHeight;
+            }
+        }
+
+        List<Medicine> medicinesWithPrescription = new ArrayList<>();
+        for (Medicine medicine : medicinesCache) {
+            if (medicine.getPrescriptionImageUri() != null && !medicine.getPrescriptionImageUri().trim().isEmpty()) {
+                medicinesWithPrescription.add(medicine);
+            }
+        }
+
+        if (!medicinesWithPrescription.isEmpty()) {
+            if (y > maxY - 140) {
+                document.finishPage(page);
+                pageNumber++;
+                pageInfo = new PdfDocument.PageInfo.Builder(595, 842, pageNumber).create();
+                page = document.startPage(pageInfo);
+                canvas = page.getCanvas();
+                y = 48;
+            }
+
+            canvas.drawText("Prescription Images", marginLeft, y, sectionPaint);
+            y += lineHeight;
+
+            int shown = 0;
+            for (Medicine medicine : medicinesWithPrescription) {
+                if (shown >= 4) break;
+                if (y > maxY - 130) {
+                    document.finishPage(page);
+                    pageNumber++;
+                    pageInfo = new PdfDocument.PageInfo.Builder(595, 842, pageNumber).create();
+                    page = document.startPage(pageInfo);
+                    canvas = page.getCanvas();
+                    y = 48;
+                }
+
+                try {
+                    Uri imageUri = Uri.parse(medicine.getPrescriptionImageUri());
+                    java.io.InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                    if (inputStream == null) continue;
+                    android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(inputStream);
+                    inputStream.close();
+                    if (bitmap == null) continue;
+
+                    android.graphics.Rect dest = new android.graphics.Rect(marginLeft, y, marginLeft + 220, y + 120);
+                    canvas.drawBitmap(bitmap, null, dest, null);
+                    canvas.drawText(medicine.getName(), marginLeft + 230, y + 18, bodyPaint);
+                    y += 130;
+                    shown++;
+                } catch (Exception ignored) {}
             }
         }
 

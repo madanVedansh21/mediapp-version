@@ -12,6 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MediBuddyRepository {
+    private static final String PREFS_NAME = "medibuddy_prefs";
+    private static final String KEY_LOGGED_IN_EMAIL = "logged_in_email";
+    private final Application application;
     private final UserDao userDao;
     private final MedicineDao medicineDao;
     private final IntakeLogDao intakeLogDao;
@@ -19,6 +22,7 @@ public class MediBuddyRepository {
     private final ExecutorService executorService;
 
     public MediBuddyRepository(Application application) {
+        this.application = application;
         AppDatabase db = AppDatabase.getDatabase(application);
         userDao = db.userDao();
         medicineDao = db.medicineDao();
@@ -39,6 +43,10 @@ public class MediBuddyRepository {
 
     public LiveData<User> getUser() {
         return userDao.getUser();
+    }
+
+    public LiveData<User> getUserByEmail(String email) {
+        return userDao.getUserByEmailLive(email);
     }
 
     public void updateUser(User user) {
@@ -90,11 +98,19 @@ public class MediBuddyRepository {
     }
 
     public LiveData<List<Medicine>> getAllMedicines() {
-        return medicineDao.getAllMedicines();
+        String ownerEmail = getLoggedInEmail();
+        if (ownerEmail.isEmpty()) {
+            return medicineDao.getAllMedicines();
+        }
+        return medicineDao.getAllMedicinesByOwner(ownerEmail);
     }
 
     public LiveData<List<Medicine>> getLowStockMedicines() {
-        return medicineDao.getLowStockMedicines();
+        String ownerEmail = getLoggedInEmail();
+        if (ownerEmail.isEmpty()) {
+            return medicineDao.getLowStockMedicines();
+        }
+        return medicineDao.getLowStockMedicinesByOwner(ownerEmail);
     }
 
     // Intake Log operations
@@ -122,5 +138,11 @@ public class MediBuddyRepository {
     
     public List<SymptomLog> getRecentSymptomsSync(long since) {
         return symptomLogDao.getRecentLogsSync(since);
+    }
+
+    private String getLoggedInEmail() {
+        String email = application.getSharedPreferences(PREFS_NAME, Application.MODE_PRIVATE)
+                .getString(KEY_LOGGED_IN_EMAIL, "");
+        return email == null ? "" : email;
     }
 }

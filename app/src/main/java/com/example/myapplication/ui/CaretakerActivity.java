@@ -10,6 +10,8 @@ import com.example.myapplication.model.User;
 import com.example.myapplication.util.ValidationUtils;
 
 public class CaretakerActivity extends AppCompatActivity {
+    private static final String PREFS_NAME = "medibuddy_prefs";
+    private static final String KEY_LOGGED_IN_EMAIL = "logged_in_email";
     private ActivityCaretakerBinding binding;
     private MediBuddyViewModel viewModel;
     private User currentUser;
@@ -39,7 +41,15 @@ public class CaretakerActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(MediBuddyViewModel.class);
 
-        viewModel.getUser().observe(this, user -> {
+        String loggedInEmail = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getString(KEY_LOGGED_IN_EMAIL, "");
+        if (loggedInEmail == null || loggedInEmail.isEmpty()) {
+            Toast.makeText(this, "Please login again", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        viewModel.getUserByEmail(loggedInEmail).observe(this, user -> {
             if (user != null) {
                 currentUser = user;
                 String preferredPhone = user.getHospitalPhone();
